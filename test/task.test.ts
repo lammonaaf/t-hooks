@@ -59,7 +59,7 @@ describe('useTask', () => {
     expect(result.current.running).toStrictEqual(true);
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.state).toStrictEqual('end');
@@ -92,7 +92,7 @@ describe('useTask', () => {
     expect(result.current.running).toStrictEqual(true);
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.state).toStrictEqual('end');
@@ -787,7 +787,7 @@ describe('useGeneratorCallback', () => {
     expect(result.current.state).toStrictEqual('start');
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.state).toStrictEqual('end');
@@ -839,7 +839,7 @@ describe('useTaskCallback', () => {
     expect(result.current.state).toStrictEqual('start');
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.state).toStrictEqual('end');
@@ -878,7 +878,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeTruthy();
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.length).toBe(5);
@@ -904,7 +904,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeTruthy();
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.length).toBe(5);
@@ -928,7 +928,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeTruthy();
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.length).toBe(4);
@@ -978,7 +978,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeTruthy();
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.length).toBe(4);
@@ -1007,7 +1007,7 @@ describe('useGeneratorMemo', () => {
     expect(result.current.length).toBe(0);
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.length).toBe(5);
@@ -1036,7 +1036,7 @@ describe('useTaskMemo', () => {
     expect(result.current.length).toBe(0);
 
     await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+      return new Promise((resolve) => setTimeout(resolve, 1100));
     });
 
     expect(result.current.length).toBe(5);
