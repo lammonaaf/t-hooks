@@ -1,4 +1,4 @@
-import { Task, TaskType, generateTask, TaskCreator, timeoutTask, cancelledTask } from 't-ask';
+import { Task, generateTask, TaskCreator, timeoutTask, cancelledTask, TaskGenerator } from 't-ask';
 import { DependencyList, useState, useEffect, useMemo, useCallback } from 'react';
 
 export function tuple<Args extends any[]>(...args: Args): Args {
@@ -35,7 +35,7 @@ export const useTask = <T>(
 };
 
 export const useGenerator = <TT extends Task<any>, R>(
-  generator: () => Generator<TT, R, TaskType<TT>> | AsyncGenerator<TT, R, TaskType<TT>>,
+  generator: TaskGenerator<[], TT, R>,
   deps: DependencyList,
 ) => {
   return useTask(() => generateTask(generator), deps);
@@ -73,7 +73,7 @@ export const useTaskMemo = <T>(defaultValue: T, generator: () => Task<T>, deps: 
 
 export const useGeneratorMemoState = <TT extends Task<any>, R>(
   defaultValue: R,
-  generator: () => Generator<TT, R, TaskType<TT>> | AsyncGenerator<TT, R, TaskType<TT>>,
+  generator: TaskGenerator<[], TT, R>,
   deps: DependencyList,
 ) => {
   return useTaskMemoState(defaultValue, () => generateTask(generator), deps);
@@ -81,7 +81,7 @@ export const useGeneratorMemoState = <TT extends Task<any>, R>(
 
 export const useGeneratorMemo = <TT extends Task<any>, R>(
   defaultValue: R,
-  generator: () => Generator<TT, R, TaskType<TT>> | AsyncGenerator<TT, R, TaskType<TT>>,
+  generator: TaskGenerator<[], TT, R>,
   deps: DependencyList,
 ) => {
   const [state] = useGeneratorMemoState(defaultValue, generator, deps);
@@ -123,7 +123,7 @@ export const useTaskCallback = <A extends any[], T>(
 };
 
 export const useGeneratorCallbackState = <TT extends Task<any>, R, A extends any[]>(
-  generator: (...args: A) => Generator<TT, R, TaskType<TT>> | AsyncGenerator<TT, R, TaskType<TT>>,
+  generator: TaskGenerator<A, TT, R>,
   deps: DependencyList,
 ) => {
   return useTaskCallbackState((...args: A) => generateTask(async function* () {
@@ -134,7 +134,7 @@ export const useGeneratorCallbackState = <TT extends Task<any>, R, A extends any
 };
 
 export const useGeneratorCallback = <TT extends Task<any>, R, A extends any[]>(
-  generator: (...args: A) => Generator<TT, R, TaskType<TT>> | AsyncGenerator<TT, R, TaskType<TT>>,
+  generator: TaskGenerator<A, TT, R>,
   deps: DependencyList,
 ) => {
   const [callback] = useGeneratorCallbackState(generator, deps);
