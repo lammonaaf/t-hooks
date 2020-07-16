@@ -1,18 +1,37 @@
-import { Task, generateTask, TaskCreator, timeoutTask, cancelledTask, TaskGenerator } from 't-ask';
-import { DependencyList, useState, useEffect, useMemo, useCallback } from 'react';
+import {
+  Task,
+  generateTask,
+  TaskCreator,
+  timeoutTask,
+  cancelledTask,
+  TaskGenerator,
+} from 't-ask';
+import {
+  DependencyList,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 
 export function tuple<Args extends any[]>(...args: Args): Args {
   return args as Args;
 }
 
-export const useTaskInterruption = <T>(task: Task<T>, callback: () => void) => {
+export const useTaskInterruption = <T>(
+  task: Task<T>,
+  callback: () => void,
+  deps: DependencyList,
+) => {
+  const callbackMemo = useCallback(callback, deps);
+
   return useEffect(() => {
     return () => {
-      callback();
+      callbackMemo();
 
       task.cancel();
-    }
-  }, [task]);
+    };
+  }, [task, callbackMemo]);
 };
 
 export const useTask = <T>(
@@ -21,15 +40,20 @@ export const useTask = <T>(
 ) => {
   const [running, setRunning] = useState<boolean>(false);
 
-  const task = useMemo<Task<T>>(() => {
-    return timeoutTask(0).tap(() => {
-      setRunning(true);
-    }).chain(creator).tap(() => {
-      setRunning(false);
-    });
-  }, [...deps, setRunning]);
+  const creatorMemo = useCallback(creator, deps);
 
-  useTaskInterruption(task, () => setRunning(false));
+  const task = useMemo<Task<T>>(() => {
+    return timeoutTask(0)
+      .tap(() => {
+        setRunning(true);
+      })
+      .chain(creatorMemo)
+      .tap(() => {
+        setRunning(false);
+      });
+  }, [creatorMemo, setRunning]);
+
+  useTaskInterruption(task, () => setRunning(false), [setRunning]);
 
   return useMemo(() => tuple(running, task), [running, task]);
 };
@@ -50,22 +74,31 @@ export const useTaskMemoState = <T>(
 
   const [running, setRunning] = useState<boolean>(false);
 
+  const creatorMemo = useCallback(creator, deps);
+
   const task = useMemo<Task<T>>(() => {
-    return timeoutTask(0).tap(() => {
-      setRunning(true);
-    }).chain(creator).tap((result) => {
-      setState(result);
+    return timeoutTask(0)
+      .tap(() => {
+        setRunning(true);
+      })
+      .chain(creatorMemo)
+      .tap((result) => {
+        setState(result);
 
-      setRunning(false);
-    });
-  }, [...deps, setRunning, setState]);
+        setRunning(false);
+      });
+  }, [creatorMemo, setRunning, setState]);
 
-  useTaskInterruption(task, () => setRunning(false));
+  useTaskInterruption(task, () => setRunning(false), [setRunning]);
 
   return useMemo(() => tuple(state, running, task), [state, running, task]);
 };
 
-export const useTaskMemo = <T>(defaultValue: T, generator: () => Task<T>, deps: DependencyList) => {
+export const useTaskMemo = <T>(
+  defaultValue: T,
+  generator: () => Task<T>,
+  deps: DependencyList,
+) => {
   const [state] = useTaskMemoState(defaultValue, generator, deps);
 
   return state;
@@ -90,31 +123,43 @@ export const useGeneratorMemo = <TT extends Task<any>, R>(
 };
 
 export const useTaskCallbackState = <A extends any[], T>(
-  creator: TaskCreator<A,T>,
+  creator: TaskCreator<A, T>,
   deps: DependencyList,
 ) => {
   const [running, setRunning] = useState<boolean>(false);
   const [task, setTask] = useState<Task<T>>(cancelledTask());
 
-  const callback = useCallback((...args: A) => {
-    const callbackTask = timeoutTask(0).tap(() => {
-      setRunning(true);
-    }).chain(() => creator(...args)).tap(() => {
-      setRunning(false);
-    });
+  const creatorMemo = useCallback(creator, deps);
 
-    setTask(callbackTask);
+  const callback = useCallback(
+    (...args: A) => {
+      const callbackTask = timeoutTask(0)
+        .tap(() => {
+          setRunning(true);
+        })
+        .chain(() => creatorMemo(...args))
+        .tap(() => {
+          setRunning(false);
+        });
 
-    return callbackTask;
-  }, [setTask, setRunning, ...deps]);
+      setTask(callbackTask);
 
-  useTaskInterruption(task, () => setRunning(false));
+      return callbackTask;
+    },
+    [setTask, setRunning, creatorMemo],
+  );
 
-  return useMemo(() => tuple(callback, running, task), [callback, running, task]);
+  useTaskInterruption(task, () => setRunning(false), [setRunning]);
+
+  return useMemo(() => tuple(callback, running, task), [
+    callback,
+    running,
+    task,
+  ]);
 };
 
 export const useTaskCallback = <A extends any[], T>(
-  creator: TaskCreator<A,T>,
+  creator: TaskCreator<A, T>,
   deps: DependencyList,
 ) => {
   const [callback] = useTaskCallbackState(creator, deps);
@@ -122,15 +167,21 @@ export const useTaskCallback = <A extends any[], T>(
   return callback;
 };
 
-export const useGeneratorCallbackState = <TT extends Task<any>, R, A extends any[]>(
+export const useGeneratorCallbackState = <
+  TT extends Task<any>,
+  R,
+  A extends any[]
+>(
   generator: TaskGenerator<A, TT, R>,
   deps: DependencyList,
 ) => {
-  return useTaskCallbackState((...args: A) => generateTask(async function* () {
-    const result = yield* generator(...args);
+  return useTaskCallbackState((...args: A) => {
+    return generateTask(async function*() {
+      const result = yield* generator(...args);
 
-    return result;
-  }), deps);
+      return result;
+    });
+  }, deps);
 };
 
 export const useGeneratorCallback = <TT extends Task<any>, R, A extends any[]>(

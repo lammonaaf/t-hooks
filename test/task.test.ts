@@ -1,34 +1,59 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useGenerator, useGeneratorCallbackState, useGeneratorCallback, useTaskCallback, useGeneratorMemoState, useGeneratorMemo, useTaskMemo } from '../src';
-import { timeoutTask, castResult, isJust, isRight, isNothing, Maybe, Either, generateTask } from 't-ask';
+import {
+  useGenerator,
+  useGeneratorCallbackState,
+  useGeneratorCallback,
+  useTaskCallback,
+  useGeneratorMemoState,
+  useGeneratorMemo,
+  useTaskMemo,
+} from '../src';
+import {
+  timeoutTask,
+  castResult,
+  isJust,
+  isRight,
+  isNothing,
+  Maybe,
+  Either,
+  generateTask,
+} from 't-ask';
 import { useState } from 'react';
 
 describe('useTask', () => {
-  const testCase = (key: string | null) => {
+  const useTestCase = (key: string | null) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const [running] = useGenerator(function* () {
-      if (key) {
-        setState('start');
-  
-        castResult<void>(yield timeoutTask(1000));
-  
-        setState('end');
-      }
-    }, [key, setState]);
+    const [running] = useGenerator(
+      function*() {
+        if (key) {
+          setState('start');
+
+          castResult<void>(yield timeoutTask(1000));
+
+          setState('end');
+        }
+      },
+      [key, setState],
+    );
 
     return { state, running };
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(testCase, { initialProps: 'true' as string | null });
+    const { result, wait } = renderHook(useTestCase, {
+      initialProps: 'true' as string | null,
+    });
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -42,7 +67,9 @@ describe('useTask', () => {
   });
 
   it('scenario2', async () => {
-    const { result, rerender, wait } = renderHook(testCase, { initialProps: null as string | null });
+    const { result, rerender, wait } = renderHook(useTestCase, {
+      initialProps: null as string | null,
+    });
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -54,9 +81,12 @@ describe('useTask', () => {
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -70,7 +100,9 @@ describe('useTask', () => {
   });
 
   it('scenario3', async () => {
-    const { result, rerender, wait } = renderHook(testCase, { initialProps: null as string | null });
+    const { result, rerender, wait } = renderHook(useTestCase, {
+      initialProps: null as string | null,
+    });
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -79,9 +111,12 @@ describe('useTask', () => {
       rerender('true');
     });
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -94,9 +129,12 @@ describe('useTask', () => {
       rerender(null);
     });
 
-    await wait(() => {
-      return result.current.running === false;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === false;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(false);
@@ -110,7 +148,9 @@ describe('useTask', () => {
   });
 
   it('scenario4', async () => {
-    const { result, wait, rerender } = renderHook(testCase, { initialProps: null as string | null });
+    const { result, wait, rerender } = renderHook(useTestCase, {
+      initialProps: null as string | null,
+    });
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -119,9 +159,12 @@ describe('useTask', () => {
       rerender('true');
     });
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -134,9 +177,12 @@ describe('useTask', () => {
       rerender('thru');
     });
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -157,7 +203,9 @@ describe('useTask', () => {
   });
 
   it('scenario5', async () => {
-    const { result, wait, rerender, unmount } = renderHook(testCase, { initialProps: null as string | null });
+    const { result, wait, rerender, unmount } = renderHook(useTestCase, {
+      initialProps: null as string | null,
+    });
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -166,9 +214,12 @@ describe('useTask', () => {
       rerender('true');
     });
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -194,24 +245,29 @@ describe('useTask', () => {
 });
 
 describe('useGeneratorCallbackState', () => {
-  const testCase = (data: string) => {
+  const useTestCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const [callback, running] = useGeneratorCallbackState(function* (prefix: string) {
-      setState('start');
+    const [callback, running] = useGeneratorCallbackState(
+      function*(prefix: string) {
+        setState('start');
 
-      castResult<void>(yield timeoutTask(1000));
+        castResult<void>(yield timeoutTask(1000));
 
-      setState('end');
+        setState('end');
 
-      return prefix + data;
-    }, [setState, data]);
+        return prefix + data;
+      },
+      [setState, data],
+    );
 
     return { state, callback, running };
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(testCase, { initialProps: ' world' });
+    const { result, wait } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -220,9 +276,12 @@ describe('useGeneratorCallbackState', () => {
       result.current.callback('hello');
     });
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -236,7 +295,7 @@ describe('useGeneratorCallbackState', () => {
   });
 
   it('scenario2', async () => {
-    const { result } = renderHook(testCase, { initialProps: ' world' });
+    const { result } = renderHook(useTestCase, { initialProps: ' world' });
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -246,7 +305,9 @@ describe('useGeneratorCallbackState', () => {
 
       expect(isJust(r)).toBeTruthy();
       expect(isJust(r) && isRight(r.just)).toBeTruthy();
-      expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("hello world");
+      expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+        'hello world',
+      );
     });
 
     expect(result.current.state).toStrictEqual('end');
@@ -254,7 +315,9 @@ describe('useGeneratorCallbackState', () => {
   });
 
   it('scenario3', async () => {
-    const { result, unmount } = renderHook(testCase, { initialProps: ' world' });
+    const { result, unmount } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback = jest.fn((_: Maybe<Either<string>>) => {});
 
@@ -262,10 +325,13 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.running).toStrictEqual(false);
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback(r);
-        expect(isNothing(r)).toBeTruthy();
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback(r);
+          expect(isNothing(r)).toBeTruthy();
+        });
     });
 
     await act(() => {
@@ -290,7 +356,9 @@ describe('useGeneratorCallbackState', () => {
   });
 
   it('scenario4', async () => {
-    const { result, wait } = renderHook(testCase, { initialProps: ' world' });
+    const { result, wait } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
     const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
@@ -299,10 +367,13 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.running).toStrictEqual(false);
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback1(r);
-        expect(isNothing(r)).toBeTruthy();
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback1(r);
+          expect(isNothing(r)).toBeTruthy();
+        });
     });
 
     await act(() => {
@@ -310,17 +381,25 @@ describe('useGeneratorCallbackState', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').resolve().then((r) => {
-        callback2(r);
-        expect(isJust(r)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("goodbye world");
-      });
+      result.current
+        .callback('goodbye')
+        .resolve()
+        .then((r) => {
+          callback2(r);
+          expect(isJust(r)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+            'goodbye world',
+          );
+        });
     });
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -337,7 +416,9 @@ describe('useGeneratorCallbackState', () => {
   });
 
   it('scenario5', async () => {
-    const { result, rerender } = renderHook(testCase, { initialProps: ' world' });
+    const { result, rerender } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback = jest.fn((_: Maybe<Either<string>>) => {});
 
@@ -345,12 +426,17 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.running).toStrictEqual(false);
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback(r);
-        expect(isJust(r)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("hello world");
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback(r);
+          expect(isJust(r)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+            'hello world',
+          );
+        });
     });
 
     await act(() => {
@@ -375,7 +461,9 @@ describe('useGeneratorCallbackState', () => {
   });
 
   it('scenario6', async () => {
-    const { result, wait, rerender } = renderHook(testCase, { initialProps: ' world' });
+    const { result, wait, rerender } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
     const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
@@ -384,10 +472,13 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.running).toStrictEqual(false);
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback1(r);
-        expect(isNothing(r)).toBeTruthy();
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback1(r);
+          expect(isNothing(r)).toBeTruthy();
+        });
     });
 
     await act(() => {
@@ -403,17 +494,25 @@ describe('useGeneratorCallbackState', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').resolve().then((r) => {
-        callback2(r);
-        expect(isJust(r)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("goodbye me");
-      });
+      result.current
+        .callback('goodbye')
+        .resolve()
+        .then((r) => {
+          callback2(r);
+          expect(isJust(r)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+            'goodbye me',
+          );
+        });
     });
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(true);
@@ -431,24 +530,29 @@ describe('useGeneratorCallbackState', () => {
 });
 
 describe('useGeneratorCallback', () => {
-  const testCase = (data: string) => {
+  const useTestCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const callback = useGeneratorCallback(function* (prefix: string) {
-      setState('start');
+    const callback = useGeneratorCallback(
+      function*(prefix: string) {
+        setState('start');
 
-      castResult<void>(yield timeoutTask(1000));
+        castResult<void>(yield timeoutTask(1000));
 
-      setState('end');
+        setState('end');
 
-      return prefix + data;
-    }, [setState, data]);
+        return prefix + data;
+      },
+      [setState, data],
+    );
 
     return { state, callback };
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(testCase, { initialProps: ' world' });
+    const { result, wait } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     expect(result.current.state).toStrictEqual('none');
 
@@ -456,9 +560,12 @@ describe('useGeneratorCallback', () => {
       result.current.callback('hello');
     });
 
-    await wait(() => {
-      return result.current.state === 'start';
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.state === 'start';
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
 
@@ -470,7 +577,7 @@ describe('useGeneratorCallback', () => {
   });
 
   it('scenario2', async () => {
-    const { result } = renderHook(testCase, { initialProps: ' world' });
+    const { result } = renderHook(useTestCase, { initialProps: ' world' });
 
     expect(result.current.state).toStrictEqual('none');
 
@@ -479,24 +586,31 @@ describe('useGeneratorCallback', () => {
 
       expect(isJust(r)).toBeTruthy();
       expect(isJust(r) && isRight(r.just)).toBeTruthy();
-      expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("hello world");
+      expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+        'hello world',
+      );
     });
 
     expect(result.current.state).toStrictEqual('end');
   });
 
   it('scenario3', async () => {
-    const { result, unmount } = renderHook(testCase, { initialProps: ' world' });
+    const { result, unmount } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback = jest.fn((_: Maybe<Either<string>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback(r);
-        expect(isNothing(r)).toBeTruthy();
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback(r);
+          expect(isNothing(r)).toBeTruthy();
+        });
     });
 
     await act(() => {
@@ -519,7 +633,9 @@ describe('useGeneratorCallback', () => {
   });
 
   it('scenario4', async () => {
-    const { result, wait } = renderHook(testCase, { initialProps: ' world' });
+    const { result, wait } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
     const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
@@ -527,10 +643,13 @@ describe('useGeneratorCallback', () => {
     expect(result.current.state).toStrictEqual('none');
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback1(r);
-        expect(isNothing(r)).toBeTruthy();
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback1(r);
+          expect(isNothing(r)).toBeTruthy();
+        });
     });
 
     await act(() => {
@@ -538,17 +657,25 @@ describe('useGeneratorCallback', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').resolve().then((r) => {
-        callback2(r);
-        expect(isJust(r)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("goodbye world");
-      });
+      result.current
+        .callback('goodbye')
+        .resolve()
+        .then((r) => {
+          callback2(r);
+          expect(isJust(r)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+            'goodbye world',
+          );
+        });
     });
 
-    await wait(() => {
-      return result.current.state === 'start';
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.state === 'start';
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
 
@@ -563,19 +690,26 @@ describe('useGeneratorCallback', () => {
   });
 
   it('scenario5', async () => {
-    const { result, rerender } = renderHook(testCase, { initialProps: ' world' });
+    const { result, rerender } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback = jest.fn((_: Maybe<Either<string>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback(r);
-        expect(isJust(r)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("hello world");
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback(r);
+          expect(isJust(r)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+            'hello world',
+          );
+        });
     });
 
     await act(() => {
@@ -598,7 +732,9 @@ describe('useGeneratorCallback', () => {
   });
 
   it('scenario6', async () => {
-    const { result, wait, rerender } = renderHook(testCase, { initialProps: ' world' });
+    const { result, wait, rerender } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
     const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
@@ -606,10 +742,13 @@ describe('useGeneratorCallback', () => {
     expect(result.current.state).toStrictEqual('none');
 
     act(() => {
-      result.current.callback('hello').resolve().then((r) => {
-        callback1(r);
-        expect(isNothing(r)).toBeTruthy();
-      });
+      result.current
+        .callback('hello')
+        .resolve()
+        .then((r) => {
+          callback1(r);
+          expect(isNothing(r)).toBeTruthy();
+        });
     });
 
     await act(() => {
@@ -625,17 +764,25 @@ describe('useGeneratorCallback', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').resolve().then((r) => {
-        callback2(r);
-        expect(isJust(r)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just)).toBeTruthy();
-        expect(isJust(r) && isRight(r.just) ? r.just.right : "").toEqual("goodbye me");
-      });
+      result.current
+        .callback('goodbye')
+        .resolve()
+        .then((r) => {
+          callback2(r);
+          expect(isJust(r)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just)).toBeTruthy();
+          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
+            'goodbye me',
+          );
+        });
     });
 
-    await wait(() => {
-      return result.current.state === 'start';
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.state === 'start';
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
 
@@ -651,24 +798,30 @@ describe('useGeneratorCallback', () => {
 });
 
 describe('useTaskCallback', () => {
-  const testCase = (data: string) => {
+  const useTestCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const callback = useTaskCallback((prefix: string) => generateTask(function* () {
-      setState('start');
+    const callback = useTaskCallback(
+      (prefix: string) =>
+        generateTask(function*() {
+          setState('start');
 
-      castResult<void>(yield timeoutTask(1000));
+          castResult<void>(yield timeoutTask(1000));
 
-      setState('end');
+          setState('end');
 
-      return prefix + data;
-    }), [setState, data]);
+          return prefix + data;
+        }),
+      [setState, data],
+    );
 
     return { state, callback };
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(testCase, { initialProps: ' world' });
+    const { result, wait } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
 
     expect(result.current.state).toStrictEqual('none');
 
@@ -676,9 +829,12 @@ describe('useTaskCallback', () => {
       result.current.callback('hello');
     });
 
-    await wait(() => {
-      return result.current.state === 'start';
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.state === 'start';
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.state).toStrictEqual('start');
 
@@ -691,25 +847,32 @@ describe('useTaskCallback', () => {
 });
 
 describe('useGeneratorMemoState', () => {
-  const testCase = (data: string) => {
-    const [length, running] = useGeneratorMemoState(0, function* () {
-      castResult<void>(yield timeoutTask(1000));
+  const useTestCase = (data: string) => {
+    const [length, running] = useGeneratorMemoState(
+      0,
+      function*() {
+        castResult<void>(yield timeoutTask(1000));
 
-      return data.length;
-    }, [data]);
+        return data.length;
+      },
+      [data],
+    );
 
     return { length, running };
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(testCase, { initialProps: 'hello' });
+    const { result, wait } = renderHook(useTestCase, { initialProps: 'hello' });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
@@ -723,14 +886,19 @@ describe('useGeneratorMemoState', () => {
   });
 
   it('scenario2', async () => {
-    const { result, wait, rerender } = renderHook(testCase, { initialProps: 'hello' });
+    const { result, wait, rerender } = renderHook(useTestCase, {
+      initialProps: 'hello',
+    });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
@@ -749,9 +917,12 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.length).toBe(5);
     expect(result.current.running).toBeFalsy();
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.length).toBe(5);
     expect(result.current.running).toBeTruthy();
@@ -765,14 +936,19 @@ describe('useGeneratorMemoState', () => {
   });
 
   it('scenario3', async () => {
-    const { result, wait, rerender } = renderHook(testCase, { initialProps: 'hello' });
+    const { result, wait, rerender } = renderHook(useTestCase, {
+      initialProps: 'hello',
+    });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
@@ -791,9 +967,12 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(() => {
-      return result.current.running === true;
-    }, { timeout: 100 });
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
@@ -808,18 +987,22 @@ describe('useGeneratorMemoState', () => {
 });
 
 describe('useGeneratorMemo', () => {
-  const testCase = (data: string) => {
-    const length = useGeneratorMemo(0, function* () {
-      castResult<void>(yield timeoutTask(1000));
+  const useTestCase = (data: string) => {
+    const length = useGeneratorMemo(
+      0,
+      function*() {
+        castResult<void>(yield timeoutTask(1000));
 
-      return data.length;
-    }, [data]);
+        return data.length;
+      },
+      [data],
+    );
 
     return { length };
   };
 
   it('scenario1', async () => {
-    const { result } = renderHook(testCase, { initialProps: 'hello' });
+    const { result } = renderHook(useTestCase, { initialProps: 'hello' });
 
     expect(result.current.length).toBe(0);
 
@@ -832,18 +1015,23 @@ describe('useGeneratorMemo', () => {
 });
 
 describe('useTaskMemo', () => {
-  const testCase = (data: string) => {
-    const length = useTaskMemo(0, () => generateTask(function* () {
-      castResult<void>(yield timeoutTask(1000));
+  const useTestCase = (data: string) => {
+    const length = useTaskMemo(
+      0,
+      () =>
+        generateTask(function*() {
+          castResult<void>(yield timeoutTask(1000));
 
-      return data.length;
-    }), [data]);
+          return data.length;
+        }),
+      [data],
+    );
 
     return { length };
   };
 
   it('scenario1', async () => {
-    const { result } = renderHook(testCase, { initialProps: 'hello' });
+    const { result } = renderHook(useTestCase, { initialProps: 'hello' });
 
     expect(result.current.length).toBe(0);
 
