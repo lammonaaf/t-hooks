@@ -1,12 +1,8 @@
 import { Task, TaskType, generateTask, TaskCreator, timeoutTask, cancelledTask } from 't-ask';
 import { DependencyList, useState, useEffect, useMemo, useCallback } from 'react';
 
-export function tuple<Args extends any[]>(...args: Args | [Args]): Args {
-  if (args.length === 1 && Array.isArray(args[0])) {
-    return args[0] as Args;
-  } else {
-    return args as Args;
-  }
+export function tuple<Args extends any[]>(...args: Args): Args {
+  return args as Args;
 }
 
 export const useTaskInterruption = <T>(task: Task<T>, callback: () => void) => {

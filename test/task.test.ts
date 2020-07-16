@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import { useGenerator, useGeneratorCallbackState, useGeneratorCallback, useTaskCallback } from '../src';
+import { useGenerator, useGeneratorCallbackState, useGeneratorCallback, useTaskCallback, useGeneratorMemoState, useGeneratorMemo, useTaskMemo } from '../src';
 import { timeoutTask, castResult, isJust, isRight, isNothing, Maybe, Either, generateTask } from 't-ask';
 import { useState } from 'react';
 
@@ -650,7 +650,7 @@ describe('useGeneratorCallback', () => {
   });
 });
 
-describe('useGeneratorCallback', () => {
+describe('useTaskCallback', () => {
   const testCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
@@ -687,5 +687,170 @@ describe('useGeneratorCallback', () => {
     });
 
     expect(result.current.state).toStrictEqual('end');
+  });
+});
+
+describe('useGeneratorMemoState', () => {
+  const testCase = (data: string) => {
+    const [length, running] = useGeneratorMemoState(0, function* () {
+      castResult<void>(yield timeoutTask(1000));
+
+      return data.length;
+    }, [data]);
+
+    return { length, running };
+  };
+
+  it('scenario1', async () => {
+    const { result, wait } = renderHook(testCase, { initialProps: 'hello' });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeFalsy();
+
+    await wait(() => {
+      return result.current.running === true;
+    }, { timeout: 100 });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+
+    expect(result.current.length).toBe(5);
+    expect(result.current.running).toBeFalsy();
+  });
+
+  it('scenario2', async () => {
+    const { result, wait, rerender } = renderHook(testCase, { initialProps: 'hello' });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeFalsy();
+
+    await wait(() => {
+      return result.current.running === true;
+    }, { timeout: 100 });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+
+    expect(result.current.length).toBe(5);
+    expect(result.current.running).toBeFalsy();
+
+    act(() => {
+      rerender('myaa');
+    });
+
+    expect(result.current.length).toBe(5);
+    expect(result.current.running).toBeFalsy();
+
+    await wait(() => {
+      return result.current.running === true;
+    }, { timeout: 100 });
+
+    expect(result.current.length).toBe(5);
+    expect(result.current.running).toBeTruthy();
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+
+    expect(result.current.length).toBe(4);
+    expect(result.current.running).toBeFalsy();
+  });
+
+  it('scenario3', async () => {
+    const { result, wait, rerender } = renderHook(testCase, { initialProps: 'hello' });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeFalsy();
+
+    await wait(() => {
+      return result.current.running === true;
+    }, { timeout: 100 });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 500));
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    act(() => {
+      rerender('myaa');
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeFalsy();
+
+    await wait(() => {
+      return result.current.running === true;
+    }, { timeout: 100 });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+
+    expect(result.current.length).toBe(4);
+    expect(result.current.running).toBeFalsy();
+  });
+});
+
+describe('useGeneratorMemo', () => {
+  const testCase = (data: string) => {
+    const length = useGeneratorMemo(0, function* () {
+      castResult<void>(yield timeoutTask(1000));
+
+      return data.length;
+    }, [data]);
+
+    return { length };
+  };
+
+  it('scenario1', async () => {
+    const { result } = renderHook(testCase, { initialProps: 'hello' });
+
+    expect(result.current.length).toBe(0);
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+
+    expect(result.current.length).toBe(5);
+  });
+});
+
+describe('useTaskMemo', () => {
+  const testCase = (data: string) => {
+    const length = useTaskMemo(0, () => generateTask(function* () {
+      castResult<void>(yield timeoutTask(1000));
+
+      return data.length;
+    }), [data]);
+
+    return { length };
+  };
+
+  it('scenario1', async () => {
+    const { result } = renderHook(testCase, { initialProps: 'hello' });
+
+    expect(result.current.length).toBe(0);
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1000));
+    });
+
+    expect(result.current.length).toBe(5);
   });
 });
