@@ -88,7 +88,9 @@ export const useGeneratorMemo = <TT extends Task<any>, R>(
   generator: () => Generator<TT, R, TaskType<TT>> | AsyncGenerator<TT, R, TaskType<TT>>,
   deps: DependencyList,
 ) => {
-  return useTaskMemo(defaultValue, () => generateTask(generator), deps);
+  const [state] = useGeneratorMemoState(defaultValue, generator, deps);
+
+  return state;
 };
 
 export const useTaskCallbackState = <A extends any[], T>(
@@ -139,9 +141,7 @@ export const useGeneratorCallback = <TT extends Task<any>, R, A extends any[]>(
   generator: (...args: A) => Generator<TT, R, TaskType<TT>> | AsyncGenerator<TT, R, TaskType<TT>>,
   deps: DependencyList,
 ) => {
-  return useTaskCallback((...args: A) => generateTask(async function* () {
-    const result = yield* generator(...args);
+  const [callback] = useGeneratorCallbackState(generator, deps);
 
-    return result;
-  }), deps);
+  return callback;
 };
