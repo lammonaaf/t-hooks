@@ -32,7 +32,7 @@
     "trailingComma": "es5"
   },
   "name": "t-hooks",
-  "author": "SYARHEI KAVALENKA",
+  "author": "ALEXANDER YUSHKOV",
   "module": "dist/t-hooks.esm.js",
   "devDependencies": {
     "@testing-library/react-hooks": "^3.3.0",
