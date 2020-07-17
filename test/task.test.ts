@@ -17,6 +17,7 @@ import {
   Maybe,
   Either,
   generateTask,
+  isLeft,
 } from 't-ask';
 import { useState } from 'react';
 
@@ -284,6 +285,10 @@ describe('useGeneratorCallbackState', () => {
 
         castResult<void>(yield timeoutTask(1000));
 
+        if (prefix === 'throw') {
+          throw new Error('Provoked');
+        }
+
         setState('end');
 
         return prefix + data;
@@ -321,6 +326,25 @@ describe('useGeneratorCallbackState', () => {
     });
 
     expect(result.current.state).toStrictEqual('end');
+    expect(result.current.running).toStrictEqual(false);
+  });
+
+  it('scenario1.1', async () => {
+    const { result } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
+
+    expect(result.current.state).toStrictEqual('none');
+    expect(result.current.running).toStrictEqual(false);
+
+    await act(async () => {
+      const r = await result.current.callback('throw').resolve();
+
+      expect(isJust(r)).toBeTruthy();
+      expect(isJust(r) && isLeft(r.just)).toBeTruthy();
+    });
+
+    expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(false);
   });
 
@@ -883,6 +907,10 @@ describe('useGeneratorMemoState', () => {
       function*() {
         castResult<void>(yield timeoutTask(1000));
 
+        if (data === 'throw') {
+          throw new Error('Provoked');
+        }
+
         return data.length;
       },
       [data],
@@ -912,6 +940,30 @@ describe('useGeneratorMemoState', () => {
     });
 
     expect(result.current.length).toBe(5);
+    expect(result.current.running).toBeFalsy();
+  });
+
+  it('scenario1.1', async () => {
+    const { result, wait } = renderHook(useTestCase, { initialProps: 'throw' });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeFalsy();
+
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1100));
+    });
+
+    expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
   });
 
