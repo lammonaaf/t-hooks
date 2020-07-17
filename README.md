@@ -1,3 +1,5 @@
+![CI](https://github.com/lammonaaf/t-hooks/workflows/CI/badge.svg)
+
 # T-Hooks task-based Readct hook library
 
 This project is intended to solve the issue of promise canceling && external failing in a semi-functional way.
