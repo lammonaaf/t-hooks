@@ -47,6 +47,6 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "t-ask": "ssh://git@github.com:lammonaaf/t-ask.git"
+    "t-ask": "ssh://git@github.com:lammonaaf/t-ask.git#0.2.0"
   }
 }
