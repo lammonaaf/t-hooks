@@ -34,6 +34,16 @@ export const useTaskInterruption = <T>(
   }, [task, callbackMemo]);
 };
 
+/**
+ * Task-invoking hook
+ * @param creator task creator to be invoked as effect
+ * @param deps dependency list
+ * @returns memorized state, containing current execution stats and executed task to be spied on
+ *
+ * Task equivalent to useEffect hook allowing to perform asynchronous operations as effects
+ *
+ * Task execution is automatically interrupted in case of effect re-render or unmounting
+ */
 export const useTask = <T>(
   creator: TaskCreator<[], T>,
   deps: DependencyList,
