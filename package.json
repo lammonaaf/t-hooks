@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -48,5 +48,9 @@
   },
   "dependencies": {
     "t-ask": "https://github.com/lammonaaf/t-ask.git#0.2.1"
-  }
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/lammonaaf/t-hooks.git"
+  }  
 }
