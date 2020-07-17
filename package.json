@@ -1,5 +1,5 @@
 {
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "t-hooks",
+  "name": "@lammonaaf/t-hooks",
   "author": "ALEXANDER YUSHKOV",
   "module": "dist/t-hooks.esm.js",
   "devDependencies": {
@@ -47,10 +47,10 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "t-ask": "https://github.com/lammonaaf/t-ask.git#0.2.1"
+    "t-tasks": "^0.2.2"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/lammonaaf/t-hooks.git"
-  }  
+    "type": "git",
+    "url": "https://github.com/lammonaaf/t-hooks.git"
+  }
 }

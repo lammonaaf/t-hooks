@@ -18,7 +18,7 @@ import {
   Either,
   generateTask,
   isLeft,
-} from 't-ask';
+} from 't-tasks';
 import { useState } from 'react';
 
 describe('useTask', () => {
