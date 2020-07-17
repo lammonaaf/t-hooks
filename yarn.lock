@@ -5532,9 +5532,9 @@ symbol-tree@^3.2.2:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-"t-ask@ssh://git@github.com:lammonaaf/t-ask.git#0.2.0":
-  version "0.2.0"
-  resolved "ssh://git@github.com:lammonaaf/t-ask.git#1a27c36a6aca84a1c7fdabd918544e2d93a183c2"
+"t-ask@https://github.com/lammonaaf/t-ask.git#0.2.1":
+  version "0.2.1"
+  resolved "https://github.com/lammonaaf/t-ask.git#8ee628b8fb79fc0bd5b8fdbcefd835b08be89701"
 
 table@^5.2.3:
   version "5.4.6"
