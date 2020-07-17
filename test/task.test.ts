@@ -31,6 +31,10 @@ describe('useTask', () => {
 
           castResult<void>(yield timeoutTask(1000));
 
+          if (key === 'throw') {
+            throw new Error('Thrown');
+          }
+
           setState('end');
         }
       },
@@ -63,6 +67,32 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toStrictEqual('end');
+    expect(result.current.running).toStrictEqual(false);
+  });
+
+  it('scenario1.1', async () => {
+    const { result, wait } = renderHook(useTestCase, {
+      initialProps: 'throw' as string | null,
+    });
+
+    expect(result.current.state).toStrictEqual('none');
+    expect(result.current.running).toStrictEqual(false);
+
+    await wait(
+      () => {
+        return result.current.running === true;
+      },
+      { timeout: 100 },
+    );
+
+    expect(result.current.state).toStrictEqual('start');
+    expect(result.current.running).toStrictEqual(true);
+
+    await act(() => {
+      return new Promise((resolve) => setTimeout(resolve, 1100));
+    });
+
+    expect(result.current.state).toStrictEqual('start');
     expect(result.current.running).toStrictEqual(false);
   });
 
@@ -319,7 +349,7 @@ describe('useGeneratorCallbackState', () => {
       initialProps: ' world',
     });
 
-    const callback = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -360,8 +390,8 @@ describe('useGeneratorCallbackState', () => {
       initialProps: ' world',
     });
 
-    const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -420,7 +450,7 @@ describe('useGeneratorCallbackState', () => {
       initialProps: ' world',
     });
 
-    const callback = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -465,8 +495,8 @@ describe('useGeneratorCallbackState', () => {
       initialProps: ' world',
     });
 
-    const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
     expect(result.current.running).toStrictEqual(false);
@@ -599,7 +629,7 @@ describe('useGeneratorCallback', () => {
       initialProps: ' world',
     });
 
-    const callback = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
 
@@ -637,8 +667,8 @@ describe('useGeneratorCallback', () => {
       initialProps: ' world',
     });
 
-    const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
 
@@ -694,7 +724,7 @@ describe('useGeneratorCallback', () => {
       initialProps: ' world',
     });
 
-    const callback = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
 
@@ -736,8 +766,8 @@ describe('useGeneratorCallback', () => {
       initialProps: ' world',
     });
 
-    const callback1 = jest.fn((_: Maybe<Either<string>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string>>) => {});
+    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
 
     expect(result.current.state).toStrictEqual('none');
 

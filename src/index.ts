@@ -50,6 +50,9 @@ export const useTask = <T>(
       .chain(creatorMemo)
       .tap(() => {
         setRunning(false);
+      })
+      .tapRejected(() => {
+        setRunning(false);
       });
   }, [creatorMemo, setRunning]);
 
@@ -85,6 +88,9 @@ export const useTaskMemoState = <T>(
       .tap((result) => {
         setState(result);
 
+        setRunning(false);
+      })
+      .tapRejected(() => {
         setRunning(false);
       });
   }, [creatorMemo, setRunning, setState]);
@@ -139,6 +145,9 @@ export const useTaskCallbackState = <A extends any[], T>(
         })
         .chain(() => creatorMemo(...args))
         .tap(() => {
+          setRunning(false);
+        })
+        .tapRejected(() => {
           setRunning(false);
         });
 
