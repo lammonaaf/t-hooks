@@ -47,7 +47,7 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "@lammonaaf/t-ask": "^0.2.1"
+    "t-tasks": "^0.2.2"
   },
   "repository": {
     "type": "git",

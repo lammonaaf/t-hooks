@@ -5,7 +5,7 @@ import {
   timeoutTask,
   cancelledTask,
   TaskGenerator,
-} from '@lammonaaf/t-ask';
+} from 't-tasks';
 import {
   DependencyList,
   useState,

@@ -969,11 +969,6 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
-"@lammonaaf/t-ask@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@lammonaaf/t-ask/-/t-ask-0.2.1.tgz#6653c8af8bb38e09aa9ebc01d2d92a4ab5da544c"
-  integrity sha512-VQJP7U/CaeG5UZo7etfF9hHhWVIYvjuXQubKR9NPnYp5rgkKSH0VX4NLorJ70eQ7e2cHe83A7HKyxqE7W6I0Eg==
-
 "@rollup/plugin-commonjs@^11.0.0":
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-11.1.0.tgz#60636c7a722f54b41e419e1709df05c7234557ef"
@@ -5536,6 +5531,11 @@ symbol-tree@^3.2.2:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
+
+t-tasks@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/t-tasks/-/t-tasks-0.2.2.tgz#3c1e093ca91769391ccff1776ab38bd6bbe1b013"
+  integrity sha512-ox6JgIQQ6SdJH5HPjkkVCAkt0u/tKc0uzJ2AVsoQProV9G0NczZCItR9LrMdk1UHBARL7gOARi9rTvDxB6Mgxw==
 
 table@^5.2.3:
   version "5.4.6"
