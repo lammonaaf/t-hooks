@@ -3,7 +3,7 @@ import {
   generateTask,
   TaskCreator,
   timeoutTask,
-  cancelledTask,
+  canceledTask,
   TaskGenerator,
 } from 't-tasks';
 import {
@@ -143,7 +143,7 @@ export const useTaskCallbackState = <A extends any[], T>(
   deps: DependencyList,
 ) => {
   const [running, setRunning] = useState<boolean>(false);
-  const [task, setTask] = useState<Task<T>>(cancelledTask());
+  const [task, setTask] = useState<Task<T>>(canceledTask());
 
   const creatorMemo = useCallback(creator, deps);
 
@@ -195,7 +195,7 @@ export const useGeneratorCallbackState = <
   deps: DependencyList,
 ) => {
   return useTaskCallbackState((...args: A) => {
-    return generateTask(async function*() {
+    return generateTask(function*() {
       const result = yield* generator(...args);
 
       return result;

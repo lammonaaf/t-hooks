@@ -47,7 +47,7 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "t-tasks": "^0.2.2"
+    "t-tasks": "^0.3.0"
   },
   "repository": {
     "type": "git",
