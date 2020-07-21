@@ -31,7 +31,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "@lammonaaf/t-hooks",
+  "name": "t-hooks",
   "author": "ALEXANDER YUSHKOV",
   "module": "dist/t-hooks.esm.js",
   "devDependencies": {
