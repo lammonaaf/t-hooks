@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 import { renderHook, act } from '@testing-library/react-hooks';
 import {
   useGenerator,
@@ -11,17 +12,28 @@ import {
 import {
   timeoutTask,
   castResult,
-  isJust,
-  isRight,
-  isNothing,
-  Maybe,
-  Either,
-  generateTask,
-  isLeft,
+  just,
+  right,
+  left,
+  nothing,
+  resolvedTask,
 } from 't-tasks';
 import { useState } from 'react';
 
 describe('useTask', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
   const useTestCase = (key: string | null) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
@@ -46,236 +58,225 @@ describe('useTask', () => {
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(useTestCase, {
+    const { result } = renderHook(useTestCase, {
       initialProps: 'true' as string | null,
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(0);
     });
 
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
-  });
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-  it('scenario1.1', async () => {
-    const { result, wait } = renderHook(useTestCase, {
-      initialProps: 'throw' as string | null,
+    await act(async () => {
+      await advanceTime(1000);
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
-
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
-    });
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('end');
+    expect(result.current.running).toBeFalsy();
   });
 
   it('scenario2', async () => {
-    const { result, rerender, wait } = renderHook(useTestCase, {
-      initialProps: null as string | null,
+    const { result } = renderHook(useTestCase, {
+      initialProps: 'throw' as string | null,
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
-    act(() => {
-      rerender('true');
+    await act(async () => {
+      await advanceTime(0);
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(1000);
     });
 
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
   });
 
   it('scenario3', async () => {
-    const { result, rerender, wait } = renderHook(useTestCase, {
+    const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
     act(() => {
       rerender('true');
     });
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    await act(async () => {
+      await advanceTime(0);
+    });
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+    expect(result.current.running).toBeFalsy();
+  });
+
+  it('scenario4', async () => {
+    const { result, rerender } = renderHook(useTestCase, {
+      initialProps: null as string | null,
+    });
+
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
+
+    act(() => {
+      rerender('true');
+    });
+
+    await act(async () => {
+      await advanceTime(0);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(500);
     });
 
     act(() => {
       rerender(null);
     });
 
-    await wait(
-      () => {
-        return result.current.running === false;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(false);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(0);
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario4', async () => {
-    const { result, wait, rerender } = renderHook(useTestCase, {
+  it('scenario5', async () => {
+    const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
     act(() => {
       rerender('true');
     });
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
     act(() => {
       rerender('thru');
     });
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(0);
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.state).toBe('end');
+    expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario5', async () => {
-    const { result, wait, rerender, unmount } = renderHook(useTestCase, {
+  it('scenario6', async () => {
+    const { result, rerender, unmount } = renderHook(useTestCase, {
       initialProps: null as string | null,
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
     act(() => {
       rerender('true');
     });
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
     act(() => {
       unmount();
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
   });
 });
 
 describe('useGeneratorCallbackState', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
   const useTestCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
@@ -286,7 +287,7 @@ describe('useGeneratorCallbackState', () => {
         castResult<void>(yield timeoutTask(1000));
 
         if (prefix === 'throw') {
-          throw new Error('Provoked');
+          throw 'some-error';
         }
 
         setState('end');
@@ -300,72 +301,73 @@ describe('useGeneratorCallbackState', () => {
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(useTestCase, {
-      initialProps: ' world',
-    });
-
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
-
-    act(() => {
-      result.current.callback('hello');
-    });
-
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
-    });
-
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
-  });
-
-  it('scenario1.1', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: ' world',
     });
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    const callback = jest.fn();
 
-    await act(async () => {
-      const r = await result.current.callback('throw').resolve();
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
-      expect(isJust(r)).toBeTruthy();
-      expect(isJust(r) && isLeft(r.just)).toBeTruthy();
+    act(() => {
+      result.current.callback('hello').tap((r) => {
+        callback(r);
+        expect(r).toStrictEqual('hello world');
+      });
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(false);
+    await act(async () => {
+      await advanceTime(0);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+    expect(result.current.running).toBeFalsy();
+
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('hello world');
   });
 
   it('scenario2', async () => {
-    const { result } = renderHook(useTestCase, { initialProps: ' world' });
-
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
-
-    await act(async () => {
-      const r = await result.current.callback('hello').resolve();
-
-      expect(isJust(r)).toBeTruthy();
-      expect(isJust(r) && isRight(r.just)).toBeTruthy();
-      expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-        'hello world',
-      );
+    const { result } = renderHook(useTestCase, {
+      initialProps: ' world',
     });
 
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
+    const callback = jest.fn();
+
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
+
+    act(() => {
+      result.current.callback('throw').tapRejected((r) => {
+        callback(r);
+        expect(r).toStrictEqual('some-error');
+      });
+    });
+
+    await act(async () => {
+      await advanceTime(0);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
+
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('some-error');
   });
 
   it('scenario3', async () => {
@@ -373,100 +375,85 @@ describe('useGeneratorCallbackState', () => {
       initialProps: ' world',
     });
 
-    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback = jest.fn();
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback(r);
-          expect(isNothing(r)).toBeTruthy();
-        });
+      result.current.callback('hello').tapCanceled(() => {
+        callback();
+      });
     });
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
     act(() => {
       unmount();
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 600));
+    await act(async () => {
+      await advanceTime(500);
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
     expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith();
   });
 
   it('scenario4', async () => {
-    const { result, wait } = renderHook(useTestCase, {
+    const { result } = renderHook(useTestCase, {
       initialProps: ' world',
     });
 
-    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback1 = jest.fn();
+    const callback2 = jest.fn();
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback1(r);
-          expect(isNothing(r)).toBeTruthy();
-        });
+      result.current.callback('hello').tapCanceled(() => {
+        callback1();
+      });
     });
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
     act(() => {
-      result.current
-        .callback('goodbye')
-        .resolve()
-        .then((r) => {
-          callback2(r);
-          expect(isJust(r)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-            'goodbye world',
-          );
-        });
+      result.current.callback('goodbye').tap((r) => {
+        callback2(r);
+        expect(r).toStrictEqual('goodbye world');
+      });
     });
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+    await act(async () => {
+      await advanceTime(0);
     });
 
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+    expect(result.current.running).toBeFalsy();
 
     expect(callback1).toBeCalledTimes(1);
+    expect(callback1).toBeCalledWith();
     expect(callback2).toBeCalledTimes(1);
+    expect(callback2).toBeCalledWith('goodbye world');
   });
 
   it('scenario5', async () => {
@@ -474,116 +461,125 @@ describe('useGeneratorCallbackState', () => {
       initialProps: ' world',
     });
 
-    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback = jest.fn();
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback(r);
-          expect(isJust(r)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-            'hello world',
-          );
-        });
+      result.current.callback('hello').tap((r) => {
+        callback(r);
+        expect(r).toStrictEqual('hello world');
+      });
     });
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(0);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(500);
     });
 
     act(() => {
       rerender(' me');
     });
 
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('end');
+    expect(result.current.running).toBeFalsy();
 
     expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith('hello world');
   });
 
   it('scenario6', async () => {
-    const { result, wait, rerender } = renderHook(useTestCase, {
+    const { result, rerender } = renderHook(useTestCase, {
       initialProps: ' world',
     });
 
-    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback1 = jest.fn();
+    const callback2 = jest.fn();
 
-    expect(result.current.state).toStrictEqual('none');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback1(r);
-          expect(isNothing(r)).toBeTruthy();
-        });
+      result.current.callback('hello').tapCanceled(() => {
+        callback1();
+      });
     });
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 250));
+    await act(async () => {
+      await advanceTime(0);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(250);
     });
 
     act(() => {
       rerender(' me');
     });
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 250));
+    await act(async () => {
+      await advanceTime(250);
     });
 
     act(() => {
-      result.current
-        .callback('goodbye')
-        .resolve()
-        .then((r) => {
-          callback2(r);
-          expect(isJust(r)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-            'goodbye me',
-          );
-        });
+      result.current.callback('goodbye').tap((r) => {
+        callback2(r);
+        expect(r).toStrictEqual('goodbye me');
+      });
     });
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-    expect(result.current.running).toStrictEqual(true);
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
+    await act(async () => {
+      await advanceTime(0);
     });
 
-    expect(result.current.state).toStrictEqual('end');
-    expect(result.current.running).toStrictEqual(false);
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+    expect(result.current.running).toBeFalsy();
 
     expect(callback1).toBeCalledTimes(1);
+    expect(callback1).toBeCalledWith();
     expect(callback2).toBeCalledTimes(1);
+    expect(callback2).toBeCalledWith('goodbye me');
   });
 });
 
 describe('useGeneratorCallback', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
   const useTestCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
@@ -592,6 +588,10 @@ describe('useGeneratorCallback', () => {
         setState('start');
 
         castResult<void>(yield timeoutTask(1000));
+
+        if (prefix === 'throw') {
+          throw 'some-error';
+        }
 
         setState('end');
 
@@ -604,48 +604,61 @@ describe('useGeneratorCallback', () => {
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(useTestCase, {
-      initialProps: ' world',
+    const { result } = renderHook(useTestCase, { initialProps: ' world' });
+
+    const callback = jest.fn();
+
+    await act(async () => {
+      expect(result.current.state).toBe('none');
+
+      const task = result.current.callback('hello');
+
+      await advanceTime(0);
+
+      expect(result.current.state).toBe('start');
+
+      await advanceTime(1000);
+
+      expect(result.current.state).toBe('end');
+
+      const r = await task.resolve();
+
+      callback(r);
+
+      expect(r).toStrictEqual(just(right('hello world')));
     });
 
-    expect(result.current.state).toStrictEqual('none');
-
-    act(() => {
-      result.current.callback('hello');
-    });
-
-    await wait(
-      () => {
-        return result.current.state === 'start';
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
-    });
-
-    expect(result.current.state).toStrictEqual('end');
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith(just(right('hello world')));
   });
 
   it('scenario2', async () => {
     const { result } = renderHook(useTestCase, { initialProps: ' world' });
 
-    expect(result.current.state).toStrictEqual('none');
+    const callback = jest.fn();
 
     await act(async () => {
-      const r = await result.current.callback('hello').resolve();
+      expect(result.current.state).toBe('none');
 
-      expect(isJust(r)).toBeTruthy();
-      expect(isJust(r) && isRight(r.just)).toBeTruthy();
-      expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-        'hello world',
-      );
+      const task = result.current.callback('throw');
+
+      await advanceTime(0);
+
+      expect(result.current.state).toBe('start');
+
+      await advanceTime(1000);
+
+      expect(result.current.state).toBe('start');
+
+      const r = await task.resolve();
+
+      callback(r);
+
+      expect(r).toStrictEqual(just(left('some-error')));
     });
 
-    expect(result.current.state).toStrictEqual('end');
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith(just(left('some-error')));
   });
 
   it('scenario3', async () => {
@@ -653,219 +666,66 @@ describe('useGeneratorCallback', () => {
       initialProps: ' world',
     });
 
-    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
+    const callback = jest.fn();
 
-    expect(result.current.state).toStrictEqual('none');
+    await act(async () => {
+      expect(result.current.state).toBe('none');
 
-    act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback(r);
-          expect(isNothing(r)).toBeTruthy();
-        });
-    });
+      const task = result.current.callback('hello');
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    });
+      await advanceTime(0);
 
-    act(() => {
+      expect(result.current.state).toBe('start');
+
+      await advanceTime(500);
+
       unmount();
+
+      await advanceTime(500);
+
+      expect(result.current.state).toBe('start');
+
+      const r = await task.resolve();
+
+      callback(r);
+
+      expect(r).toStrictEqual(nothing());
     });
-
-    expect(result.current.state).toStrictEqual('start');
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 600));
-    });
-
-    expect(result.current.state).toStrictEqual('start');
 
     expect(callback).toBeCalledTimes(1);
-  });
-
-  it('scenario4', async () => {
-    const { result, wait } = renderHook(useTestCase, {
-      initialProps: ' world',
-    });
-
-    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
-
-    expect(result.current.state).toStrictEqual('none');
-
-    act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback1(r);
-          expect(isNothing(r)).toBeTruthy();
-        });
-    });
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    });
-
-    act(() => {
-      result.current
-        .callback('goodbye')
-        .resolve()
-        .then((r) => {
-          callback2(r);
-          expect(isJust(r)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-            'goodbye world',
-          );
-        });
-    });
-
-    await wait(
-      () => {
-        return result.current.state === 'start';
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1000));
-    });
-
-    expect(result.current.state).toStrictEqual('end');
-
-    expect(callback1).toBeCalledTimes(1);
-    expect(callback2).toBeCalledTimes(1);
-  });
-
-  it('scenario5', async () => {
-    const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
-    });
-
-    const callback = jest.fn((_: Maybe<Either<string, any>>) => {});
-
-    expect(result.current.state).toStrictEqual('none');
-
-    act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback(r);
-          expect(isJust(r)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-            'hello world',
-          );
-        });
-    });
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    });
-
-    act(() => {
-      rerender(' me');
-    });
-
-    expect(result.current.state).toStrictEqual('start');
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    });
-
-    expect(result.current.state).toStrictEqual('end');
-
-    expect(callback).toBeCalledTimes(1);
-  });
-
-  it('scenario6', async () => {
-    const { result, wait, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
-    });
-
-    const callback1 = jest.fn((_: Maybe<Either<string, any>>) => {});
-    const callback2 = jest.fn((_: Maybe<Either<string, any>>) => {});
-
-    expect(result.current.state).toStrictEqual('none');
-
-    act(() => {
-      result.current
-        .callback('hello')
-        .resolve()
-        .then((r) => {
-          callback1(r);
-          expect(isNothing(r)).toBeTruthy();
-        });
-    });
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 250));
-    });
-
-    act(() => {
-      rerender(' me');
-    });
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 250));
-    });
-
-    act(() => {
-      result.current
-        .callback('goodbye')
-        .resolve()
-        .then((r) => {
-          callback2(r);
-          expect(isJust(r)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just)).toBeTruthy();
-          expect(isJust(r) && isRight(r.just) ? r.just.right : '').toEqual(
-            'goodbye me',
-          );
-        });
-    });
-
-    await wait(
-      () => {
-        return result.current.state === 'start';
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
-    });
-
-    expect(result.current.state).toStrictEqual('end');
-
-    expect(callback1).toBeCalledTimes(1);
-    expect(callback2).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith(nothing());
   });
 });
 
 describe('useTaskCallback', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
   const useTestCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
     const callback = useTaskCallback(
       (prefix: string) =>
-        generateTask(function*() {
-          setState('start');
-
-          castResult<void>(yield timeoutTask(1000));
-
-          setState('end');
-
-          return prefix + data;
-        }),
+        resolvedTask(undefined)
+          .tap(() => setState('start'))
+          .chain(() => timeoutTask(1000))
+          .tap(() => {
+            if (prefix === 'throw') {
+              throw 'some-error';
+            }
+          })
+          .tap(() => setState('end'))
+          .fmap(() => prefix + data),
       [setState, data],
     );
 
@@ -873,34 +733,113 @@ describe('useTaskCallback', () => {
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(useTestCase, {
+    const { result } = renderHook(useTestCase, { initialProps: ' world' });
+
+    const callback = jest.fn();
+
+    await act(async () => {
+      expect(result.current.state).toBe('none');
+
+      const task = result.current.callback('hello');
+
+      await advanceTime(0);
+
+      expect(result.current.state).toBe('start');
+
+      await advanceTime(1000);
+
+      expect(result.current.state).toBe('end');
+
+      const r = await task.resolve();
+
+      callback(r);
+
+      expect(r).toStrictEqual(just(right('hello world')));
+    });
+
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith(just(right('hello world')));
+  });
+
+  it('scenario2', async () => {
+    const { result } = renderHook(useTestCase, { initialProps: ' world' });
+
+    const callback = jest.fn();
+
+    await act(async () => {
+      expect(result.current.state).toBe('none');
+
+      const task = result.current.callback('throw');
+
+      await advanceTime(0);
+
+      expect(result.current.state).toBe('start');
+
+      await advanceTime(1000);
+
+      expect(result.current.state).toBe('start');
+
+      const r = await task.resolve();
+
+      callback(r);
+
+      expect(r).toStrictEqual(just(left('some-error')));
+    });
+
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith(just(left('some-error')));
+  });
+
+  it('scenario3', async () => {
+    const { result, unmount } = renderHook(useTestCase, {
       initialProps: ' world',
     });
 
-    expect(result.current.state).toStrictEqual('none');
+    const callback = jest.fn();
 
-    act(() => {
-      result.current.callback('hello');
+    await act(async () => {
+      expect(result.current.state).toBe('none');
+
+      const task = result.current.callback('hello');
+
+      await advanceTime(0);
+
+      expect(result.current.state).toBe('start');
+
+      await advanceTime(500);
+
+      unmount();
+
+      await advanceTime(500);
+
+      expect(result.current.state).toBe('start');
+
+      const r = await task.resolve();
+
+      callback(r);
+
+      expect(r).toStrictEqual(nothing());
     });
 
-    await wait(
-      () => {
-        return result.current.state === 'start';
-      },
-      { timeout: 100 },
-    );
-
-    expect(result.current.state).toStrictEqual('start');
-
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
-    });
-
-    expect(result.current.state).toStrictEqual('end');
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith(nothing());
   });
 });
 
 describe('useGeneratorMemoState', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
   const useTestCase = (data: string) => {
     const [length, running] = useGeneratorMemoState(
       0,
@@ -908,7 +847,7 @@ describe('useGeneratorMemoState', () => {
         castResult<void>(yield timeoutTask(1000));
 
         if (data === 'throw') {
-          throw new Error('Provoked');
+          throw 'some-error';
         }
 
         return data.length;
@@ -920,73 +859,64 @@ describe('useGeneratorMemoState', () => {
   };
 
   it('scenario1', async () => {
-    const { result, wait } = renderHook(useTestCase, { initialProps: 'hello' });
+    const { result } = renderHook(useTestCase, { initialProps: 'hello' });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(1000);
     });
 
     expect(result.current.length).toBe(5);
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario1.1', async () => {
-    const { result, wait } = renderHook(useTestCase, { initialProps: 'throw' });
+  it('scenario2', async () => {
+    const { result } = renderHook(useTestCase, { initialProps: 'throw' });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(1000);
     });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario2', async () => {
-    const { result, wait, rerender } = renderHook(useTestCase, {
+  it('scenario3', async () => {
+    const { result, rerender } = renderHook(useTestCase, {
       initialProps: 'hello',
     });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(1000);
     });
 
     expect(result.current.length).toBe(5);
@@ -999,44 +929,38 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.length).toBe(5);
     expect(result.current.running).toBeFalsy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
     expect(result.current.length).toBe(5);
     expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(1000);
     });
 
     expect(result.current.length).toBe(4);
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario3', async () => {
-    const { result, wait, rerender } = renderHook(useTestCase, {
+  it('scenario4', async () => {
+    const { result, rerender } = renderHook(useTestCase, {
       initialProps: 'hello',
     });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
+    await act(async () => {
+      await advanceTime(500);
     });
 
     expect(result.current.length).toBe(0);
@@ -1049,18 +973,15 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
 
-    await wait(
-      () => {
-        return result.current.running === true;
-      },
-      { timeout: 100 },
-    );
+    await act(async () => {
+      await advanceTime(0);
+    });
 
     expect(result.current.length).toBe(0);
     expect(result.current.running).toBeTruthy();
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(1000);
     });
 
     expect(result.current.length).toBe(4);
@@ -1069,6 +990,19 @@ describe('useGeneratorMemoState', () => {
 });
 
 describe('useGeneratorMemo', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
   const useTestCase = (data: string) => {
     const length = useGeneratorMemo(
       0,
@@ -1088,8 +1022,14 @@ describe('useGeneratorMemo', () => {
 
     expect(result.current.length).toBe(0);
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(0);
+    });
+
+    expect(result.current.length).toBe(0);
+
+    await act(async () => {
+      await advanceTime(1000);
     });
 
     expect(result.current.length).toBe(5);
@@ -1097,15 +1037,23 @@ describe('useGeneratorMemo', () => {
 });
 
 describe('useTaskMemo', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
   const useTestCase = (data: string) => {
     const length = useTaskMemo(
       0,
-      () =>
-        generateTask(function*() {
-          castResult<void>(yield timeoutTask(1000));
-
-          return data.length;
-        }),
+      () => timeoutTask(1000).fmap(() => data.length),
       [data],
     );
 
@@ -1117,8 +1065,14 @@ describe('useTaskMemo', () => {
 
     expect(result.current.length).toBe(0);
 
-    await act(() => {
-      return new Promise((resolve) => setTimeout(resolve, 1100));
+    await act(async () => {
+      await advanceTime(0);
+    });
+
+    expect(result.current.length).toBe(0);
+
+    await act(async () => {
+      await advanceTime(1000);
     });
 
     expect(result.current.length).toBe(5);
