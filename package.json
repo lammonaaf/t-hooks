@@ -47,11 +47,19 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "t-tasks": "^0.3.0"
+    "t-tasks": "^0.3.4"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/lammonaaf/t-hooks.git"
   },
-  "keywords": ["react", "hooks", "react-hooks", "tasks", "flow", "monad", "cancelable"]
+  "keywords": [
+    "react",
+    "hooks",
+    "react-hooks",
+    "tasks",
+    "flow",
+    "monad",
+    "cancelable"
+  ]
 }
