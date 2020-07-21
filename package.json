@@ -1,5 +1,5 @@
 {
-  "version": "0.3.4",
+  "version": "0.3.5",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -31,7 +31,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "@lammonaaf/t-hooks",
+  "name": "t-hooks",
   "author": "ALEXANDER YUSHKOV",
   "module": "dist/t-hooks.esm.js",
   "devDependencies": {
