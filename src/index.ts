@@ -18,22 +18,6 @@ function tuple<Args extends any[]>(...args: Args): Args {
   return args as Args;
 }
 
-const useTaskInterruption = <T>(
-  task: Task<T>,
-  callback: () => void,
-  deps: DependencyList,
-) => {
-  const callbackMemo = useCallback(callback, deps);
-
-  return useEffect(() => {
-    return () => {
-      callbackMemo();
-
-      task.cancel();
-    };
-  }, [task, callbackMemo]);
-};
-
 /**
  * Task-invoking hook
  * @param creator task creator to be invoked as effect
@@ -66,9 +50,19 @@ export const useTask = <T>(
       });
   }, [creatorMemo, setRunning]);
 
-  useTaskInterruption(task, () => setRunning(false), [setRunning]);
+  const cancel = useCallback(() => {
+    setRunning(false);
 
-  return useMemo(() => tuple(running, task), [running, task]);
+    task.cancel();
+  }, [task, setRunning]);
+
+  useEffect(() => {
+    return () => {
+      cancel();
+    };
+  }, [task, cancel]);
+
+  return useMemo(() => tuple(running, cancel), [running, cancel]);
 };
 
 /**
@@ -128,9 +122,19 @@ export const useTaskMemoState = <T>(
       });
   }, [creatorMemo, setRunning, setState]);
 
-  useTaskInterruption(task, () => setRunning(false), [setRunning]);
+  const cancel = useCallback(() => {
+    setRunning(false);
 
-  return useMemo(() => tuple(state, running, task), [state, running, task]);
+    task.cancel();
+  }, [task, setRunning]);
+
+  useEffect(() => {
+    return () => {
+      cancel();
+    };
+  }, [task, cancel]);
+
+  return useMemo(() => tuple(state, running, cancel), [state, running, cancel]);
 };
 
 /**
@@ -242,12 +246,22 @@ export const useTaskCallbackState = <A extends any[], T>(
     [setTask, setRunning, creatorMemo],
   );
 
-  useTaskInterruption(task, () => setRunning(false), [setRunning]);
+  const cancel = useCallback(() => {
+    setRunning(false);
 
-  return useMemo(() => tuple(callback, running, task), [
+    task.cancel();
+  }, [task, setRunning]);
+
+  useEffect(() => {
+    return () => {
+      cancel();
+    };
+  }, [task, cancel]);
+
+  return useMemo(() => tuple(callback, running, cancel), [
     callback,
     running,
-    task,
+    cancel,
   ]);
 };
 
@@ -298,9 +312,7 @@ export const useGeneratorCallbackState = <
 ) => {
   return useTaskCallbackState((...args: A) => {
     return generateTask(function*() {
-      const result = yield* generator(...args);
-
-      return result;
+      return yield* generator(...args);
     });
   }, deps);
 };
