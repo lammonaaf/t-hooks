@@ -1,6 +1,6 @@
 ![CI](https://github.com/lammonaaf/t-hooks/workflows/CI/badge.svg)
 
-# T-Hooks task-based Readct hook library
+# T-Hooks task-based React hook library
 
 T-Hooks provides a set of react hooks built upon T-Tasks library. Using task hooks instead of conventional lifecycle hooks alows easier usage of asynchronous operations withing hooks and provides automatic operation cancelation in case of hook unmounting or re-render.
 
