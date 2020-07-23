@@ -1,5 +1,5 @@
 {
-  "name": "callback",
+  "name": "memo",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -8,8 +8,10 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@types/uuid": "^8.0.0",
     "button": "^1.1.1",
-    "react-app-polyfill": "^1.0.0"
+    "react-app-polyfill": "^1.0.0",
+    "uuid": "^8.2.0"
   },
   "alias": {
     "react": "../../node_modules/react",
