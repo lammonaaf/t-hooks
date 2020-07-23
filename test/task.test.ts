@@ -37,7 +37,7 @@ describe('useTaskEffect', () => {
   const useTestCase = (key: string | null) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const [running] = useGeneratorEffect(
+    const [running, cancel] = useGeneratorEffect(
       function*() {
         if (key) {
           setState('start');
@@ -54,7 +54,7 @@ describe('useTaskEffect', () => {
       [key, setState],
     );
 
-    return { state, running };
+    return { state, running, cancel };
   };
 
   it('scenario1', async () => {
@@ -307,6 +307,57 @@ describe('useTaskEffect', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
   });
+
+  it('scenario7', async () => {
+    const { result, rerender } = renderHook(useTestCase, {
+      initialProps: null as string | null,
+    });
+
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
+
+    act(() => {
+      rerender('true');
+    });
+
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
+    act(() => {
+      result.current.cancel();
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
+  });
 });
 
 describe('useGeneratorCallbackState', () => {
@@ -326,7 +377,7 @@ describe('useGeneratorCallbackState', () => {
   const useTestCase = (data: string) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const [callback, running] = useGeneratorCallbackState(
+    const [callback, running, cancel] = useGeneratorCallbackState(
       function*(prefix: string) {
         setState('start');
 
@@ -343,7 +394,7 @@ describe('useGeneratorCallbackState', () => {
       [setState, data],
     );
 
-    return { state, callback, running };
+    return { state, callback, running, cancel };
   };
 
   it('scenario1', async () => {
@@ -609,6 +660,44 @@ describe('useGeneratorCallbackState', () => {
     expect(callback1).toBeCalledWith();
     expect(callback2).toBeCalledTimes(1);
     expect(callback2).toBeCalledWith('goodbye me');
+  });
+
+  it('scenario7', async () => {
+    const { result } = renderHook(useTestCase, {
+      initialProps: ' world',
+    });
+
+    const callback = jest.fn();
+
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeFalsy();
+
+    act(() => {
+      result.current.callback('hello').tapCanceled(() => {
+        callback();
+      });
+    });
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    act(() => {
+      result.current.cancel();
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeFalsy();
+
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith();
   });
 });
 
@@ -887,7 +976,7 @@ describe('useGeneratorMemoState', () => {
   };
 
   const useTestCase = (data: string) => {
-    const [length, running] = useGeneratorMemoState(
+    const [length, running, cancel] = useGeneratorMemoState(
       0,
       function*() {
         castResult<void>(yield timeoutTask(1000));
@@ -901,7 +990,7 @@ describe('useGeneratorMemoState', () => {
       [data],
     );
 
-    return { length, running };
+    return { length, running, cancel };
   };
 
   it('scenario1', async () => {
@@ -1031,6 +1120,80 @@ describe('useGeneratorMemoState', () => {
     });
 
     expect(result.current.length).toBe(4);
+    expect(result.current.running).toBeFalsy();
+  });
+
+  it('scenario5', async () => {
+    const { result, unmount } = renderHook(useTestCase, {
+      initialProps: 'hello',
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    act(() => {
+      unmount();
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+  });
+
+  it('scenario6', async () => {
+    const { result } = renderHook(useTestCase, {
+      initialProps: 'hello',
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeTruthy();
+
+    act(() => {
+      result.current.cancel();
+    });
+
+    expect(result.current.length).toBe(0);
+    expect(result.current.running).toBeFalsy();
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.length).toBe(0);
     expect(result.current.running).toBeFalsy();
   });
 });
