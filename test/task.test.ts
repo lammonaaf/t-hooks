@@ -1,7 +1,7 @@
 /* eslint-disable no-throw-literal */
 import { renderHook, act } from '@testing-library/react-hooks';
 import {
-  useGenerator,
+  useGeneratorEffect,
   useGeneratorCallbackState,
   useGeneratorCallback,
   useTaskCallback,
@@ -20,7 +20,7 @@ import {
 } from 't-tasks';
 import { useState } from 'react';
 
-describe('useTask', () => {
+describe('useTaskEffect', () => {
   beforeEach(() => jest.useFakeTimers());
   afterEach(() => jest.useRealTimers());
 
@@ -37,7 +37,7 @@ describe('useTask', () => {
   const useTestCase = (key: string | null) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const [running] = useGenerator(
+    const [running] = useGeneratorEffect(
       function*() {
         if (key) {
           setState('start');
@@ -63,10 +63,10 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -86,10 +86,10 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -109,6 +109,13 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
@@ -116,10 +123,10 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -139,14 +146,24 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
       rerender('true');
     });
 
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -161,7 +178,7 @@ describe('useTask', () => {
     });
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -181,14 +198,24 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
       rerender('true');
     });
 
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -198,12 +225,18 @@ describe('useTask', () => {
       await advanceTime(500);
     });
 
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
     act(() => {
       rerender('thru');
     });
 
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
+
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -230,14 +263,24 @@ describe('useTask', () => {
     });
 
     expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
       rerender('true');
     });
 
+    expect(result.current.state).toBe('none');
+    expect(result.current.running).toBeTruthy();
+
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -246,6 +289,9 @@ describe('useTask', () => {
     await act(async () => {
       await advanceTime(500);
     });
+
+    expect(result.current.state).toBe('start');
+    expect(result.current.running).toBeTruthy();
 
     act(() => {
       unmount();
@@ -318,7 +364,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -353,7 +399,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -437,7 +483,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -474,7 +520,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -520,7 +566,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -546,7 +592,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -613,7 +659,7 @@ describe('useGeneratorCallback', () => {
 
       const task = result.current.callback('hello');
 
-      await advanceTime(0);
+      await flushPromises();
 
       expect(result.current.state).toBe('start');
 
@@ -642,7 +688,7 @@ describe('useGeneratorCallback', () => {
 
       const task = result.current.callback('throw');
 
-      await advanceTime(0);
+      await flushPromises();
 
       expect(result.current.state).toBe('start');
 
@@ -673,7 +719,7 @@ describe('useGeneratorCallback', () => {
 
       const task = result.current.callback('hello');
 
-      await advanceTime(0);
+      await flushPromises();
 
       expect(result.current.state).toBe('start');
 
@@ -742,7 +788,7 @@ describe('useTaskCallback', () => {
 
       const task = result.current.callback('hello');
 
-      await advanceTime(0);
+      await flushPromises();
 
       expect(result.current.state).toBe('start');
 
@@ -771,7 +817,7 @@ describe('useTaskCallback', () => {
 
       const task = result.current.callback('throw');
 
-      await advanceTime(0);
+      await flushPromises();
 
       expect(result.current.state).toBe('start');
 
@@ -802,7 +848,7 @@ describe('useTaskCallback', () => {
 
       const task = result.current.callback('hello');
 
-      await advanceTime(0);
+      await flushPromises();
 
       expect(result.current.state).toBe('start');
 
@@ -862,10 +908,10 @@ describe('useGeneratorMemoState', () => {
     const { result } = renderHook(useTestCase, { initialProps: 'hello' });
 
     expect(result.current.length).toBe(0);
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(0);
@@ -883,10 +929,10 @@ describe('useGeneratorMemoState', () => {
     const { result } = renderHook(useTestCase, { initialProps: 'throw' });
 
     expect(result.current.length).toBe(0);
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(0);
@@ -906,10 +952,10 @@ describe('useGeneratorMemoState', () => {
     });
 
     expect(result.current.length).toBe(0);
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(0);
@@ -927,10 +973,10 @@ describe('useGeneratorMemoState', () => {
     });
 
     expect(result.current.length).toBe(5);
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(5);
@@ -950,10 +996,10 @@ describe('useGeneratorMemoState', () => {
     });
 
     expect(result.current.length).toBe(0);
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(0);
@@ -971,10 +1017,10 @@ describe('useGeneratorMemoState', () => {
     });
 
     expect(result.current.length).toBe(0);
-    expect(result.current.running).toBeFalsy();
+    expect(result.current.running).toBeTruthy();
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(0);
@@ -1023,7 +1069,7 @@ describe('useGeneratorMemo', () => {
     expect(result.current.length).toBe(0);
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(0);
@@ -1066,7 +1112,7 @@ describe('useTaskMemo', () => {
     expect(result.current.length).toBe(0);
 
     await act(async () => {
-      await advanceTime(0);
+      await flushPromises();
     });
 
     expect(result.current.length).toBe(0);

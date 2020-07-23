@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useGeneratorCallbackState } from '../../src';
+import { useGeneratorCallbackState } from '../../.';
 import { timeoutTask, castResult } from 't-tasks';
 
 export const Example = () => {
@@ -7,7 +7,7 @@ export const Example = () => {
 
   const [callback, running, cancel] = useGeneratorCallbackState(
     function*() {
-      castResult<void>(yield timeoutTask(3000));
+      castResult<void>(yield timeoutTask(2000));
 
       setState(state + '-Blah');
     },
