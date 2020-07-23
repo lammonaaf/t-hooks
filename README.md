@@ -1,10 +1,13 @@
 ![CI](https://github.com/lammonaaf/t-hooks/workflows/CI/badge.svg)
 
-# T-Hooks task-based Readct hook library
+# T-Hooks task-based React hook library
 
 T-Hooks provides a set of react hooks built upon T-Tasks library. Using task hooks instead of conventional lifecycle hooks alows easier usage of asynchronous operations withing hooks and provides automatic operation cancelation in case of hook unmounting or re-render.
 
 ## Examples
+
+* [Task memo](examples/memo/README.md)
+* [Task callback](examples/callback/README.md)
 
 ### Task-based useEffect
 
@@ -15,7 +18,7 @@ const taskCreator = (arg: string) => liftResult(someAsyncOperation(arg)).tap((re
   setSomething(result); // side effects
 });
 
-useTask(() => taskCreator(arg), [arg]);
+useTaskEffect(() => taskCreator(arg), [arg]);
 ```
 
 ### Generator-based useEffect
@@ -23,7 +26,7 @@ useTask(() => taskCreator(arg), [arg]);
 In this scenario a generator syntax is used to achieve the same result. Generator syntax allows for more natural task chaining, however every ```yield``` requires to be wrapped to some form of type cast. T-Tasks library provides a bunch of convinience casts, but even a simple ```() as Something``` works too.
 
 ```ts
-useGenerator(function*() {
+useGeneratorEffect(function*() {
   const result = castResultCreator<typeof someAsyncOperation>(yield liftResult(someAsyncOperation(arg)));
 
   setSomething(result); // side effects
@@ -35,7 +38,7 @@ useGenerator(function*() {
 In this scenario a generator syntax is used to chain two consequtive async operations with two side-effects. In case of unmounting or re-render during execution of the first operation, the second one would not be started and both side effects would not be performed. In case of unmounting or re-render during execution of the second operation, only the second side-effect would be prevented. 
 
 ```ts
-useGenerator(function*() {
+useGeneratorEffect(function*() {
   const result1 = castResultCreator<typeof someAsyncOperation>(yield liftResult(someAsyncOperation(arg)));
 
   setSomething(result1); // side effect 1
