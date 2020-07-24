@@ -44,9 +44,11 @@ export const useTaskEffect = <T>(
   const cancel = useCallback(() => setTask(null), [setTask]);
 
   useEffect(() => {
-    if (task) {
+    const innerTask = task;
+
+    if (innerTask) {
       return () => {
-        task.cancel();
+        innerTask.cancel();
       };
     } else {
       return undefined;
@@ -116,9 +118,11 @@ export const useTaskMemoState = <T>(
   const cancel = useCallback(() => setTask(null), [setTask]);
 
   useEffect(() => {
-    if (task) {
+    const innerTask = task;
+
+    if (innerTask) {
       return () => {
-        task.cancel();
+        innerTask.cancel();
       };
     } else {
       return undefined;
@@ -237,9 +241,11 @@ export const useTaskCallbackState = <A extends any[], T>(
   const cancel = useCallback(() => setTask(null), [setTask]);
 
   useEffect(() => {
-    if (task) {
+    const innerTask = task;
+
+    if (innerTask) {
       return () => {
-        task.cancel();
+        innerTask.cancel();
       };
     } else {
       return undefined;
