@@ -1287,3 +1287,63 @@ describe('useTaskMemo', () => {
     expect(result.current.length).toBe(5);
   });
 });
+
+describe('useGeneratorMemo', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
+  const useTestCase = () => {
+    const data = useGeneratorMemo(
+      null,
+      // eslint-disable-next-line require-yield
+      function*() {
+        return 'hello';
+      },
+      [],
+    );
+
+    const length = useGeneratorMemo(
+      0,
+      function*() {
+        if (!data) {
+          return 0;
+        }
+
+        castResult<void>(yield timeoutTask(1000));
+
+        return data.length;
+      },
+      [data],
+    );
+
+    return { length };
+  };
+
+  it('scenario1', async () => {
+    const { result } = renderHook(useTestCase);
+
+    expect(result.current.length).toBe(0);
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.length).toBe(0);
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.length).toBe(5);
+  });
+});
