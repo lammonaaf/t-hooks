@@ -30,15 +30,15 @@ export const useTaskEffect = <T>(
   const [task, setTask] = useState<Task<T> | null>(null);
 
   useEffect(() => {
-    const innnerTask = creatorMemo()
+    const innerTask = creatorMemo()
       .tap(() => {
-        setTask(null);
+        setTask((current) => (current === innerTask ? null : current));
       })
       .tapRejected(() => {
-        setTask(null);
+        setTask((current) => (current === innerTask ? null : current));
       });
 
-    setTask(innnerTask);
+    setTask(innerTask);
   }, [creatorMemo, setTask]);
 
   const cancel = useCallback(() => setTask(null), [setTask]);
@@ -95,6 +95,8 @@ export const useTaskMemoState = <T>(
   creator: TaskCreator<[], T>,
   deps: DependencyList,
 ) => {
+  const inst = useMemo(() => Math.trunc(Math.random() * 100), []);
+
   const [state, setState] = useState<T>(defaultValue);
 
   const creatorMemo = useCallback(creator, deps);
@@ -102,18 +104,18 @@ export const useTaskMemoState = <T>(
   const [task, setTask] = useState<Task<T> | null>(null);
 
   useEffect(() => {
-    const innnerTask = creatorMemo()
+    const innerTask = creatorMemo()
       .tap((result) => {
         setState(result);
 
-        setTask(null);
+        setTask((current) => (current === innerTask ? null : current));
       })
       .tapRejected(() => {
-        setTask(null);
+        setTask((current) => (current === innerTask ? null : current));
       });
 
-    setTask(innnerTask);
-  }, [creatorMemo, setTask, setState]);
+    setTask(innerTask);
+  }, [creatorMemo, setTask, setState, inst]);
 
   const cancel = useCallback(() => setTask(null), [setTask]);
 
@@ -127,7 +129,7 @@ export const useTaskMemoState = <T>(
     } else {
       return undefined;
     }
-  }, [task]);
+  }, [task, inst]);
 
   const running = !!task;
 
@@ -225,10 +227,10 @@ export const useTaskCallbackState = <A extends any[], T>(
     (...args: A) => {
       const innerTask = creatorMemo(...args)
         .tap(() => {
-          setTask(null);
+          setTask((current) => (current === innerTask ? null : current));
         })
         .tapRejected(() => {
-          setTask(null);
+          setTask((current) => (current === innerTask ? null : current));
         });
 
       setTask(innerTask);
