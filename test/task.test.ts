@@ -11,7 +11,7 @@ import {
 } from '../src';
 import {
   timeoutTask,
-  castResult,
+  cast,
   just,
   right,
   left,
@@ -42,7 +42,7 @@ describe('useTaskEffect', () => {
         if (key) {
           setState('start');
 
-          castResult<void>(yield timeoutTask(1000));
+          cast<void>(yield timeoutTask(1000));
 
           if (key === 'throw') {
             throw new Error('Thrown');
@@ -381,7 +381,7 @@ describe('useGeneratorCallbackState', () => {
       function*(prefix: string) {
         setState('start');
 
-        castResult<void>(yield timeoutTask(1000));
+        cast<void>(yield timeoutTask(1000));
 
         if (prefix === 'throw') {
           throw 'some-error';
@@ -722,7 +722,7 @@ describe('useGeneratorCallback', () => {
       function*(prefix: string) {
         setState('start');
 
-        castResult<void>(yield timeoutTask(1000));
+        cast<void>(yield timeoutTask(1000));
 
         if (prefix === 'throw') {
           throw 'some-error';
@@ -979,7 +979,7 @@ describe('useGeneratorMemoState', () => {
     const [length, running, cancel] = useGeneratorMemoState(
       0,
       function*() {
-        castResult<void>(yield timeoutTask(1000));
+        cast<void>(yield timeoutTask(1000));
 
         if (data === 'throw') {
           throw 'some-error';
@@ -1216,7 +1216,7 @@ describe('useGeneratorMemo', () => {
     const length = useGeneratorMemo(
       0,
       function*() {
-        castResult<void>(yield timeoutTask(1000));
+        cast<void>(yield timeoutTask(1000));
 
         return data.length;
       },
@@ -1319,7 +1319,7 @@ describe('useGeneratorMemo', () => {
           return 0;
         }
 
-        castResult<void>(yield timeoutTask(1000));
+        cast<void>(yield timeoutTask(1000));
 
         return data.length;
       },
