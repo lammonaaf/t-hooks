@@ -15,7 +15,7 @@ function tuple<Args extends any[]>(...args: Args): Args {
  * Task-invoking hook
  * @param taskFunction task taskFunction to be invoked as effect
  * @param deps dependency list
- * @returns current execution status (running or not) and executed task to be spied on
+ * @returns current execution status (running or not) and cancellation function
  *
  * Task equivalent to useEffect hook allowing to perform asynchronous operations as effects
  *
@@ -64,7 +64,7 @@ export const useTaskEffect = <T>(
  * Generator-invoking hook
  * @param taskGenerator task generator function
  * @param deps dependency list
- * @returns current execution status (running or not) and executed task to be spied on
+ * @returns current execution status (running or not) and cancellation function
  *
  * @see useTaskEffect
  *
@@ -84,7 +84,7 @@ export const useGeneratorEffect = <TT extends Task<any>, R>(
  * @param defaultValue initial value available immediately
  * @param taskFunction task taskFunction to be invoked to get transformed value
  * @param deps depandency list
- * @returns memorized value, current execution status (running or not) and executed task to be spied on
+ * @returns memorized value, current execution status (running or not) and cancellation function
  *
  * Task equivalent to useMemo hook allowing to perform asynchronous memorized transformations
  *
@@ -164,7 +164,7 @@ export const useTaskMemo = <T>(
  * @param defaultValue initial value available immediately
  * @param taskGenerator task generator function
  * @param deps dependency list
- * @returns memorized value, current execution status (running or not) and executed task to be spied on
+ * @returns memorized value, current execution status (running or not) and cancellation function
  *
  * @see useTaskMemoState
  *
@@ -211,7 +211,7 @@ export const useGeneratorMemo = <TT extends Task<any>, R>(
  * Task-based asynchronous callback hook
  * @param taskFunction task taskFunction to be invoked as callback
  * @param deps dependency list
- * @returns callback to be invoked, current execution status (running or not) and executed task to be spied on
+ * @returns callback to be invoked, current execution status (running or not) and cancellation function
  *
  * Task equivalent to useCallback hook allowing to perform asynchronous callbacks
  *
@@ -294,7 +294,7 @@ export const useTaskCallback = <A extends any[], T>(
  * Generator-based asynchronous callback hook
  * @param taskGenerator task generator function
  * @param deps dependency list
- * @returns callback to be invoked, current execution status (running or not) and executed task to be spied on
+ * @returns callback to be invoked, current execution status (running or not) and cancellation function
  *
  * @see useTaskCallbackState
  *
