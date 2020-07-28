@@ -1,4 +1,9 @@
-import { Task, generateTask, TaskFunction, TaskGenerator } from 't-tasks';
+import {
+  Task,
+  generateTask,
+  TaskFunction,
+  TaskGeneratorFunction,
+} from 't-tasks';
 import {
   DependencyList,
   useState,
@@ -73,7 +78,7 @@ export const useTaskEffect = <T>(
  * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
  */
 export const useGeneratorEffect = <TT extends Task<any>, R>(
-  taskGenerator: TaskGenerator<[], TT, R>,
+  taskGenerator: TaskGeneratorFunction<[], TT, R>,
   deps: DependencyList,
 ) => {
   return useTaskEffect(() => generateTask(taskGenerator), deps);
@@ -174,7 +179,7 @@ export const useTaskMemo = <T>(
  */
 export const useGeneratorMemoState = <TT extends Task<any>, R>(
   defaultValue: R,
-  taskGenerator: TaskGenerator<[], TT, R>,
+  taskGenerator: TaskGeneratorFunction<[], TT, R>,
   deps: DependencyList,
 ) => {
   return useTaskMemoState(
@@ -199,7 +204,7 @@ export const useGeneratorMemoState = <TT extends Task<any>, R>(
  */
 export const useGeneratorMemo = <TT extends Task<any>, R>(
   defaultValue: R,
-  taskGenerator: TaskGenerator<[], TT, R>,
+  taskGenerator: TaskGeneratorFunction<[], TT, R>,
   deps: DependencyList,
 ) => {
   const [state] = useGeneratorMemoState(defaultValue, taskGenerator, deps);
@@ -309,7 +314,7 @@ export const useGeneratorCallbackState = <
   R,
   A extends any[]
 >(
-  taskGenerator: TaskGenerator<A, TT, R>,
+  taskGenerator: TaskGeneratorFunction<A, TT, R>,
   deps: DependencyList,
 ) => {
   return useTaskCallbackState((...args: A) => {
@@ -334,7 +339,7 @@ export const useGeneratorCallbackState = <
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
 export const useGeneratorCallback = <TT extends Task<any>, R, A extends any[]>(
-  taskGenerator: TaskGenerator<A, TT, R>,
+  taskGenerator: TaskGeneratorFunction<A, TT, R>,
   deps: DependencyList,
 ) => {
   const [callback] = useGeneratorCallbackState(taskGenerator, deps);
