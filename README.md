@@ -4,11 +4,6 @@
 
 T-Hooks provides a set of react hooks built upon T-Tasks library. Using task hooks instead of conventional lifecycle hooks alows easier usage of asynchronous operations withing hooks and provides automatic operation cancelation in case of hook unmounting or re-render.
 
-## Examples
-
-* [Task memo](examples/memo/README.md)
-* [Task callback](examples/callback/README.md)
-
 ### Task-based useEffect
 
 In this scenario, every time ```arg``` updates an asynchronous operation is started, resulting in a side effect. If hook is unmonted before the operation finishes no side effect is performed, preventing modification of state of unmounted component. Moreover, if ```arg``` changes before the operation finishes another operation in started instead, canceling the previous one.
