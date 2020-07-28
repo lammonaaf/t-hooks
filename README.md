@@ -8,16 +8,11 @@
 
 T-Hooks provides a set of react hooks built upon T-Tasks library. Using task hooks instead of conventional lifecycle hooks alows easier usage of asynchronous operations withing hooks and provides automatic operation cancelation in case of hook unmounting or re-render.
 
-## Examples
-
-* [Task memo](examples/memo/README.md)
-* [Task callback](examples/callback/README.md)
-
 ### Task-based useEffect
 
 In this scenario, every time ```arg``` updates an asynchronous operation is started, resulting in a side effect. If hook is unmonted before the operation finishes no side effect is performed, preventing modification of state of unmounted component. Moreover, if ```arg``` changes before the operation finishes another operation in started instead, canceling the previous one.
 
-```ts
+```tsx
 const taskCreator = (arg: string) => liftResult(someAsyncOperation(arg)).tap((result) => {
   setSomething(result); // side effects
 });
@@ -29,7 +24,7 @@ useTaskEffect(() => taskCreator(arg), [arg]);
 
 In this scenario a generator syntax is used to achieve the same result. Generator syntax allows for more natural task chaining, however every ```yield``` requires to be wrapped to some form of type cast. T-Tasks library provides a bunch of convinience casts, but even a simple ```() as Something``` works too.
 
-```ts
+```tsx
 useGeneratorEffect(function*() {
   const result = castResultCreator<typeof someAsyncOperation>(yield liftResult(someAsyncOperation(arg)));
 
@@ -41,7 +36,7 @@ useGeneratorEffect(function*() {
 
 In this scenario a generator syntax is used to chain two consequtive async operations with two side-effects. In case of unmounting or re-render during execution of the first operation, the second one would not be started and both side effects would not be performed. In case of unmounting or re-render during execution of the second operation, only the second side-effect would be prevented. 
 
-```ts
+```tsx
 useGeneratorEffect(function*() {
   const result1 = castResultCreator<typeof someAsyncOperation>(yield liftResult(someAsyncOperation(arg)));
 
@@ -57,7 +52,7 @@ useGeneratorEffect(function*() {
 
 In this scenario, every time ```arg``` updates an asynchronous operation is started, updating ```remoteData``` asynchronously. In case of hook unmounting or updating ```arg``` again before the previous operation finishes, another operation in started instead, canceling the previous one.
 
-```ts
+```tsx
 const userData = useTaskMemo(null, () => liftResult(getUserDataAsync(userId)), [userId]);
 ```
 
@@ -65,7 +60,7 @@ const userData = useTaskMemo(null, () => liftResult(getUserDataAsync(userId)), [
 
 In this scenario a generator syntax is used to achieve the same result. Generator syntax allows for more natural task chaining, however every ```yield``` requires to be wrapped to some form of type cast. T-Tasks library provides a bunch of convinience casts, but even a simple ```() as Something``` works too.
 
-```ts
+```tsx
 const userData = useGeneratorMemo(null, function*() {
   return castResultCreator<typeof getUserDataAsync>(yield liftTask(getUserDataAsync(userId)));
 }, [userId]);
@@ -75,7 +70,7 @@ const userData = useGeneratorMemo(null, function*() {
 
 In this scenario a generator syntax is used to chain two consequtive async operations in a single task memo.
 
-```ts
+```tsx
 const usageStats = useGeneratorMemo(null, function*() {
   const userData = castResultCreator<typeof getUserDataAsync>(yield liftTask(getUserDataAsync(userId)));
 

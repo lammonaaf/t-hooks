@@ -21,33 +21,39 @@
 
 ### `Const` useGeneratorCallback
 
-▸ **useGeneratorCallback**‹**TT**, **R**, **A**›(`taskGenerator`: TaskGeneratorFunction‹A, TT, R›, `deps`: DependencyList): *(Anonymous function)*
+▸ **useGeneratorCallback**‹**A**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, TT, R›, `deps`: DependencyList): *(Anonymous function)*
 
-*Defined in [src/index.ts:341](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L341)*
+*Defined in [src/index.ts:374](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L374)*
 
 Generator-based asynchronous callback hook (convinience binding)
-
-**`see`** useTaskCallbackState
 
 Generator version of task-callback converting generator to compound task first
 
 Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
 
+**`see`** useTaskCallbackState
+
 **`note`** Task is not cancelled on hook re-render, but is cancelled on the next call instead
 
 **Type parameters:**
 
+▪ **A**: *any[]*
+
+callback arguments type
+
 ▪ **TT**: *Task‹any›*
+
+yielded task type
 
 ▪ **R**
 
-▪ **A**: *any[]*
+resulting task resolve type
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`taskGenerator` | TaskGeneratorFunction‹A, TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹A, TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *(Anonymous function)*
@@ -58,33 +64,39 @@ ___
 
 ### `Const` useGeneratorCallbackState
 
-▸ **useGeneratorCallbackState**‹**TT**, **R**, **A**›(`taskGenerator`: TaskGeneratorFunction‹A, TT, R›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
+▸ **useGeneratorCallbackState**‹**A**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, TT, R›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:312](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L312)*
+*Defined in [src/index.ts:341](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L341)*
 
 Generator-based asynchronous callback hook
-
-**`see`** useTaskCallbackState
 
 Generator version of task-callback converting generator to compound task first
 
 Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
 
+**`see`** useTaskCallbackState
+
 **`note`** Task is not cancelled on hook re-render, but is cancelled on the next call instead
 
 **Type parameters:**
 
+▪ **A**: *any[]*
+
+callback arguments type
+
 ▪ **TT**: *Task‹any›*
+
+yielded task type
 
 ▪ **R**
 
-▪ **A**: *any[]*
+resulting task resolve type
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`taskGenerator` | TaskGeneratorFunction‹A, TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹A, TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *[(Anonymous function), boolean, (Anonymous function)]*
@@ -95,29 +107,33 @@ ___
 
 ### `Const` useGeneratorEffect
 
-▸ **useGeneratorEffect**‹**TT**, **R**›(`taskGenerator`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
+▸ **useGeneratorEffect**‹**TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:80](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L80)*
+*Defined in [src/index.ts:85](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L85)*
 
 Generator-invoking hook
-
-**`see`** useTaskEffect
 
 Generator version of task-effect converting generator to compound task first
 
 Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
 
+**`see`** useTaskEffect
+
 **Type parameters:**
 
 ▪ **TT**: *Task‹any›*
 
+yielded task type
+
 ▪ **R**
+
+resulting task resolve type
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`taskGenerator` | TaskGeneratorFunction‹[], TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹[], TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *[boolean, (Anonymous function)]*
@@ -128,30 +144,34 @@ ___
 
 ### `Const` useGeneratorMemo
 
-▸ **useGeneratorMemo**‹**TT**, **R**›(`defaultValue`: R, `taskGenerator`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *R*
+▸ **useGeneratorMemo**‹**TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *R*
 
-*Defined in [src/index.ts:205](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L205)*
+*Defined in [src/index.ts:220](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L220)*
 
 Generator-based asynchronous memo hook (convinience binding)
-
-**`see`** useGeneratorMemoState
 
 Generator version of task-memo converting generator to compound task first
 
 Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
 
+**`see`** useGeneratorMemoState
+
 **Type parameters:**
 
 ▪ **TT**: *Task‹any›*
 
+yielded task type
+
 ▪ **R**
+
+resulting task resolve type
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`defaultValue` | R | initial value available immediately |
-`taskGenerator` | TaskGeneratorFunction‹[], TT, R› | task generator function |
+`initialValue` | R | initial value available immediately |
+`taskGeneratorFunction` | TaskGeneratorFunction‹[], TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *R*
@@ -162,30 +182,34 @@ ___
 
 ### `Const` useGeneratorMemoState
 
-▸ **useGeneratorMemoState**‹**TT**, **R**›(`defaultValue`: R, `taskGenerator`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *[R, boolean, (Anonymous function)]*
+▸ **useGeneratorMemoState**‹**TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *[R, boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:180](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L180)*
+*Defined in [src/index.ts:192](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L192)*
 
 Generator-based asynchronous memo hook
-
-**`see`** useTaskMemoState
 
 Generator version of task-memo converting generator to compound task first
 
 Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
 
+**`see`** useTaskMemoState
+
 **Type parameters:**
 
 ▪ **TT**: *Task‹any›*
 
+yielded task type
+
 ▪ **R**
+
+resulting task resolve type
 
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`defaultValue` | R | initial value available immediately |
-`taskGenerator` | TaskGeneratorFunction‹[], TT, R› | task generator function |
+`initialValue` | R | initial value available immediately |
+`taskGeneratorFunction` | TaskGeneratorFunction‹[], TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *[R, boolean, (Anonymous function)]*
@@ -198,15 +222,15 @@ ___
 
 ▸ **useTaskCallback**‹**A**, **T**›(`taskFunction`: TaskFunction‹A, T›, `deps`: DependencyList): *(Anonymous function)*
 
-*Defined in [src/index.ts:289](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L289)*
+*Defined in [src/index.ts:314](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L314)*
 
 Task-based asynchronous callback hook (convinience binding)
-
-**`see`** useTaskCallbackState
 
 Task equivalent to useCallback hook allowing to perform asynchronous callbacks
 
 Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
+
+**`see`** useTaskCallbackState
 
 **`note`** Task is not cancelled on hook re-render, but is cancelled on the next call instead
 
@@ -214,7 +238,11 @@ Task execution is automatically interrupted in case of additional calls or unmou
 
 ▪ **A**: *any[]*
 
+callback arguments type
+
 ▪ **T**
+
+resulting task resolve type
 
 **Parameters:**
 
@@ -233,9 +261,13 @@ ___
 
 ▸ **useTaskCallbackState**‹**A**, **T**›(`taskFunction`: TaskFunction‹A, T›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:227](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L227)*
+*Defined in [src/index.ts:249](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L249)*
 
 Task-based asynchronous callback hook
+
+Task equivalent to useCallback hook allowing to perform asynchronous callbacks
+
+Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
 
 **`note`** Task is not cancelled on hook re-render, but is cancelled on the next call instead
 
@@ -243,7 +275,11 @@ Task-based asynchronous callback hook
 
 ▪ **A**: *any[]*
 
+callback arguments type
+
 ▪ **T**
+
+resulting task resolve type
 
 **Parameters:**
 
@@ -256,23 +292,25 @@ Name | Type | Description |
 
 callback to be invoked, current execution status (running or not) and cancellation function
 
-Task equivalent to useCallback hook allowing to perform asynchronous callbacks
-
-Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
-
 ___
 
 ### `Const` useTaskEffect
 
 ▸ **useTaskEffect**‹**T**›(`taskFunction`: TaskFunction‹[], T›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:29](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L29)*
+*Defined in [src/index.ts:31](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L31)*
 
 Task-invoking hook
+
+Task equivalent to useEffect hook allowing to perform asynchronous operations as effects
+
+Task execution is automatically interrupted in case of effect re-render or unmounting. This way, only one task is running at the given time
 
 **Type parameters:**
 
 ▪ **T**
+
+resulting task resolve type
 
 **Parameters:**
 
@@ -285,33 +323,31 @@ Name | Type | Description |
 
 current execution status (running or not) and cancellation function
 
-Task equivalent to useEffect hook allowing to perform asynchronous operations as effects
-
-Task execution is automatically interrupted in case of effect re-render or unmounting. This way, only one task is running at the given time
-
 ___
 
 ### `Const` useTaskMemo
 
-▸ **useTaskMemo**‹**T**›(`defaultValue`: T, `taskFunction`: function, `deps`: DependencyList): *T*
+▸ **useTaskMemo**‹**T**›(`initialValue`: T, `taskFunction`: function, `deps`: DependencyList): *T*
 
-*Defined in [src/index.ts:157](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L157)*
+*Defined in [src/index.ts:166](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L166)*
 
 Task-based asynchronous memo hook (convinience binding)
-
-**`see`** useTaskMemoState
 
 Task equivalent to useMemo hook allowing to perform asynchronous memorized transformations
 
 Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
 
+**`see`** useTaskMemoState
+
 **Type parameters:**
 
 ▪ **T**
 
+resulting task resolve type
+
 **Parameters:**
 
-▪ **defaultValue**: *T*
+▪ **initialValue**: *T*
 
 initial value available immediately
 
@@ -333,28 +369,30 @@ ___
 
 ### `Const` useTaskMemoState
 
-▸ **useTaskMemoState**‹**T**›(`defaultValue`: T, `taskFunction`: TaskFunction‹[], T›, `deps`: DependencyList): *[T, boolean, (Anonymous function)]*
+▸ **useTaskMemoState**‹**T**›(`initialValue`: T, `taskFunction`: TaskFunction‹[], T›, `deps`: DependencyList): *[T, boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:98](https://github.com/lammonaaf/t-hooks/blob/9b76d66/src/index.ts#L98)*
+*Defined in [src/index.ts:105](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L105)*
 
 Task-based asynchronous memo hook
+
+Task equivalent to useMemo hook allowing to perform asynchronous memorized transformations
+
+Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
 
 **Type parameters:**
 
 ▪ **T**
 
+resulting task resolve type
+
 **Parameters:**
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`defaultValue` | T | initial value available immediately |
+`initialValue` | T | initial value available immediately |
 `taskFunction` | TaskFunction‹[], T› | task taskFunction to be invoked to get transformed value |
 `deps` | DependencyList | depandency list |
 
 **Returns:** *[T, boolean, (Anonymous function)]*
 
 memorized value, current execution status (running or not) and cancellation function
-
-Task equivalent to useMemo hook allowing to perform asynchronous memorized transformations
-
-Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
