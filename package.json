@@ -1,5 +1,5 @@
 {
-  "version": "0.5.3",
+  "version": "0.7.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -16,7 +16,7 @@
     "test": "tsdx test --passWithNoTests",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
-    "docs": "typedoc --out ./docs ./src"
+    "docs": "typedoc --excludeNotExported --out ./docs ./src"
   },
   "peerDependencies": {
     "react": ">=16"
@@ -46,11 +46,13 @@
     "tsdx": "^0.13.2",
     "tslib": "^2.0.0",
     "typedoc": "^0.17.8",
+    "typedoc-plugin-markdown": "^2.3.1",
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "t-tasks": "^0.6.0"
+    "t-tasks": "^0.7.0"
   },
+  "homepage": "https://lammonaaf.github.io/t-hooks",
   "repository": {
     "type": "git",
     "url": "https://github.com/lammonaaf/t-hooks.git"

@@ -1,26 +1,32 @@
-name: Deply pages
+name: Pages
+
 on:
   push:
     branches:
       - master
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           persist-credentials: false
 
-      - name: Use Node 12
+      - name: Setup node
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
 
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        env:
+          CI: true
+
       - name: Generate docs
-        run: |
-          yarn install --frozen-lockfile
-          yarn docs
+        run: yarn docs
         env:
           CI: true
 
