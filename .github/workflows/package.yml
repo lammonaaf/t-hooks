@@ -1,0 +1,35 @@
+name: Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        env:
+          CI: true
+
+      - name: Test
+        run: yarn test --ci --coverage --maxWorkers=2
+        env:
+          CI: true
+
+      - name: Publish package
+        run: yarn publish
+        env:
+          CI: true
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
