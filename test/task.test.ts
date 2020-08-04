@@ -9,15 +9,7 @@ import {
   useGeneratorMemo,
   useTaskMemo,
 } from '../src';
-import {
-  timeoutTask,
-  cast,
-  just,
-  right,
-  left,
-  nothing,
-  resolvedTask,
-} from 't-tasks';
+import { Task, Maybe, Either } from 't-tasks';
 import { useState } from 'react';
 
 describe('useTaskEffect', () => {
@@ -42,7 +34,7 @@ describe('useTaskEffect', () => {
         if (key) {
           setState('start');
 
-          cast<void>(yield timeoutTask(1000));
+          yield* Task.timeout(1000).generator();
 
           if (key === 'throw') {
             throw new Error('Thrown');
@@ -381,7 +373,7 @@ describe('useGeneratorCallbackState', () => {
       function*(prefix: string) {
         setState('start');
 
-        cast<void>(yield timeoutTask(1000));
+        yield* Task.timeout(1000).generator();
 
         if (prefix === 'throw') {
           throw 'some-error';
@@ -722,7 +714,7 @@ describe('useGeneratorCallback', () => {
       function*(prefix: string) {
         setState('start');
 
-        cast<void>(yield timeoutTask(1000));
+        yield* Task.timeout(1000).generator();
 
         if (prefix === 'throw') {
           throw 'some-error';
@@ -760,11 +752,11 @@ describe('useGeneratorCallback', () => {
 
       callback(r);
 
-      expect(r).toStrictEqual(just(right('hello world')));
+      expect(r).toStrictEqual(Maybe.just(Either.right('hello world')));
     });
 
     expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(just(right('hello world')));
+    expect(callback).toBeCalledWith(Maybe.just(Either.right('hello world')));
   });
 
   it('scenario2', async () => {
@@ -789,11 +781,11 @@ describe('useGeneratorCallback', () => {
 
       callback(r);
 
-      expect(r).toStrictEqual(just(left('some-error')));
+      expect(r).toStrictEqual(Maybe.just(Either.left('some-error')));
     });
 
     expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(just(left('some-error')));
+    expect(callback).toBeCalledWith(Maybe.just(Either.left('some-error')));
   });
 
   it('scenario3', async () => {
@@ -824,11 +816,11 @@ describe('useGeneratorCallback', () => {
 
       callback(r);
 
-      expect(r).toStrictEqual(nothing());
+      expect(r).toStrictEqual(Maybe.nothing());
     });
 
     expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(nothing());
+    expect(callback).toBeCalledWith(Maybe.nothing());
   });
 });
 
@@ -851,16 +843,16 @@ describe('useTaskCallback', () => {
 
     const callback = useTaskCallback(
       (prefix: string) =>
-        resolvedTask(undefined)
+        Task.resolved(undefined)
           .tap(() => setState('start'))
-          .chain(() => timeoutTask(1000))
+          .chain(() => Task.timeout(1000))
           .tap(() => {
             if (prefix === 'throw') {
               throw 'some-error';
             }
           })
           .tap(() => setState('end'))
-          .fmap(() => prefix + data),
+          .map(() => prefix + data),
       [setState, data],
     );
 
@@ -889,11 +881,11 @@ describe('useTaskCallback', () => {
 
       callback(r);
 
-      expect(r).toStrictEqual(just(right('hello world')));
+      expect(r).toStrictEqual(Maybe.just(Either.right('hello world')));
     });
 
     expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(just(right('hello world')));
+    expect(callback).toBeCalledWith(Maybe.just(Either.right('hello world')));
   });
 
   it('scenario2', async () => {
@@ -918,11 +910,11 @@ describe('useTaskCallback', () => {
 
       callback(r);
 
-      expect(r).toStrictEqual(just(left('some-error')));
+      expect(r).toStrictEqual(Maybe.just(Either.left('some-error')));
     });
 
     expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(just(left('some-error')));
+    expect(callback).toBeCalledWith(Maybe.just(Either.left('some-error')));
   });
 
   it('scenario3', async () => {
@@ -953,11 +945,11 @@ describe('useTaskCallback', () => {
 
       callback(r);
 
-      expect(r).toStrictEqual(nothing());
+      expect(r).toStrictEqual(Maybe.nothing());
     });
 
     expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(nothing());
+    expect(callback).toBeCalledWith(Maybe.nothing());
   });
 });
 
@@ -979,7 +971,7 @@ describe('useGeneratorMemoState', () => {
     const [length, running, cancel] = useGeneratorMemoState(
       0,
       function*() {
-        cast<void>(yield timeoutTask(1000));
+        yield* Task.timeout(1000).generator();
 
         if (data === 'throw') {
           throw 'some-error';
@@ -1216,7 +1208,7 @@ describe('useGeneratorMemo', () => {
     const length = useGeneratorMemo(
       0,
       function*() {
-        cast<void>(yield timeoutTask(1000));
+        yield* Task.timeout(1000).generator();
 
         return data.length;
       },
@@ -1262,7 +1254,7 @@ describe('useTaskMemo', () => {
   const useTestCase = (data: string) => {
     const length = useTaskMemo(
       0,
-      () => timeoutTask(1000).fmap(() => data.length),
+      () => Task.timeout(1000).map(() => data.length),
       [data],
     );
 
@@ -1319,7 +1311,7 @@ describe('useGeneratorMemo', () => {
           return 0;
         }
 
-        cast<void>(yield timeoutTask(1000));
+        yield* Task.timeout(1000).generator();
 
         return data.length;
       },
