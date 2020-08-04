@@ -21,9 +21,9 @@
 
 ### `Const` useGeneratorCallback
 
-▸ **useGeneratorCallback**‹**A**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, TT, R›, `deps`: DependencyList): *(Anonymous function)*
+▸ **useGeneratorCallback**‹**A**, **T**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, T, TT, R›, `deps`: DependencyList): *(Anonymous function)*
 
-*Defined in [src/index.ts:374](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L374)*
+*Defined in [src/index.ts:370](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L370)*
 
 Generator-based asynchronous callback hook (convinience binding)
 
@@ -41,7 +41,9 @@ Task execution is automatically interrupted in case of additional calls or unmou
 
 callback arguments type
 
-▪ **TT**: *Task‹any›*
+▪ **T**
+
+▪ **TT**: *Task‹T›*
 
 yielded task type
 
@@ -53,7 +55,7 @@ resulting task resolve type
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`taskGeneratorFunction` | TaskGeneratorFunction‹A, TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹A, T, TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *(Anonymous function)*
@@ -64,9 +66,9 @@ ___
 
 ### `Const` useGeneratorCallbackState
 
-▸ **useGeneratorCallbackState**‹**A**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, TT, R›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
+▸ **useGeneratorCallbackState**‹**A**, **T**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, T, TT, R›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:341](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L341)*
+*Defined in [src/index.ts:336](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L336)*
 
 Generator-based asynchronous callback hook
 
@@ -84,7 +86,9 @@ Task execution is automatically interrupted in case of additional calls or unmou
 
 callback arguments type
 
-▪ **TT**: *Task‹any›*
+▪ **T**
+
+▪ **TT**: *Task‹T›*
 
 yielded task type
 
@@ -96,7 +100,7 @@ resulting task resolve type
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`taskGeneratorFunction` | TaskGeneratorFunction‹A, TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹A, T, TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *[(Anonymous function), boolean, (Anonymous function)]*
@@ -107,9 +111,9 @@ ___
 
 ### `Const` useGeneratorEffect
 
-▸ **useGeneratorEffect**‹**TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
+▸ **useGeneratorEffect**‹**T**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹[], T, TT, R›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:85](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L85)*
+*Defined in [src/index.ts:80](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L80)*
 
 Generator-invoking hook
 
@@ -121,7 +125,9 @@ Task execution is automatically interrupted in case of hook re-render or unmount
 
 **Type parameters:**
 
-▪ **TT**: *Task‹any›*
+▪ **T**
+
+▪ **TT**: *Task‹T›*
 
 yielded task type
 
@@ -133,7 +139,7 @@ resulting task resolve type
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`taskGeneratorFunction` | TaskGeneratorFunction‹[], TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹[], T, TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *[boolean, (Anonymous function)]*
@@ -144,9 +150,9 @@ ___
 
 ### `Const` useGeneratorMemo
 
-▸ **useGeneratorMemo**‹**TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *R*
+▸ **useGeneratorMemo**‹**T**, **TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], T, TT, R›, `deps`: DependencyList): *R*
 
-*Defined in [src/index.ts:220](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L220)*
+*Defined in [src/index.ts:215](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L215)*
 
 Generator-based asynchronous memo hook (convinience binding)
 
@@ -158,7 +164,9 @@ Task execution is automatically interrupted in case of hook re-render or unmount
 
 **Type parameters:**
 
-▪ **TT**: *Task‹any›*
+▪ **T**
+
+▪ **TT**: *Task‹T›*
 
 yielded task type
 
@@ -171,7 +179,7 @@ resulting task resolve type
 Name | Type | Description |
 ------ | ------ | ------ |
 `initialValue` | R | initial value available immediately |
-`taskGeneratorFunction` | TaskGeneratorFunction‹[], TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹[], T, TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *R*
@@ -182,9 +190,9 @@ ___
 
 ### `Const` useGeneratorMemoState
 
-▸ **useGeneratorMemoState**‹**TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], TT, R›, `deps`: DependencyList): *[R, boolean, (Anonymous function)]*
+▸ **useGeneratorMemoState**‹**T**, **TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], T, TT, R›, `deps`: DependencyList): *[R, boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:192](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L192)*
+*Defined in [src/index.ts:187](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L187)*
 
 Generator-based asynchronous memo hook
 
@@ -196,7 +204,9 @@ Task execution is automatically interrupted in case of hook re-render or unmount
 
 **Type parameters:**
 
-▪ **TT**: *Task‹any›*
+▪ **T**
+
+▪ **TT**: *Task‹T›*
 
 yielded task type
 
@@ -209,7 +219,7 @@ resulting task resolve type
 Name | Type | Description |
 ------ | ------ | ------ |
 `initialValue` | R | initial value available immediately |
-`taskGeneratorFunction` | TaskGeneratorFunction‹[], TT, R› | task generator function |
+`taskGeneratorFunction` | TaskGeneratorFunction‹[], T, TT, R› | task generator function |
 `deps` | DependencyList | dependency list |
 
 **Returns:** *[R, boolean, (Anonymous function)]*
@@ -222,7 +232,7 @@ ___
 
 ▸ **useTaskCallback**‹**A**, **T**›(`taskFunction`: TaskFunction‹A, T›, `deps`: DependencyList): *(Anonymous function)*
 
-*Defined in [src/index.ts:314](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L314)*
+*Defined in [src/index.ts:309](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L309)*
 
 Task-based asynchronous callback hook (convinience binding)
 
@@ -261,7 +271,7 @@ ___
 
 ▸ **useTaskCallbackState**‹**A**, **T**›(`taskFunction`: TaskFunction‹A, T›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:249](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L249)*
+*Defined in [src/index.ts:244](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L244)*
 
 Task-based asynchronous callback hook
 
@@ -298,7 +308,7 @@ ___
 
 ▸ **useTaskEffect**‹**T**›(`taskFunction`: TaskFunction‹[], T›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:31](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L31)*
+*Defined in [src/index.ts:26](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L26)*
 
 Task-invoking hook
 
@@ -329,7 +339,7 @@ ___
 
 ▸ **useTaskMemo**‹**T**›(`initialValue`: T, `taskFunction`: function, `deps`: DependencyList): *T*
 
-*Defined in [src/index.ts:166](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L166)*
+*Defined in [src/index.ts:161](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L161)*
 
 Task-based asynchronous memo hook (convinience binding)
 
@@ -371,7 +381,7 @@ ___
 
 ▸ **useTaskMemoState**‹**T**›(`initialValue`: T, `taskFunction`: TaskFunction‹[], T›, `deps`: DependencyList): *[T, boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:105](https://github.com/lammonaaf/t-hooks/blob/f554f12/src/index.ts#L105)*
+*Defined in [src/index.ts:100](https://github.com/lammonaaf/t-hooks/blob/428cc75/src/index.ts#L100)*
 
 Task-based asynchronous memo hook
 
