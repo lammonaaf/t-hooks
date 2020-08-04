@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useGeneratorCallbackState } from '../../.';
-import { timeoutTask, castResult } from 't-tasks';
+import { Task } from 't-tasks';
 
 export const Example = () => {
   const [state, setState] = React.useState('Blah');
 
   const [callback, running, cancel] = useGeneratorCallbackState(
     function*() {
-      castResult<void>(yield timeoutTask(2000));
+      yield* Task.timeout(2000).generator();
 
       setState(state + '-Blah');
     },

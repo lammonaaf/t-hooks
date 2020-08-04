@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useGeneratorMemoState } from '../../.';
-import { castResultCreator, liftResult } from 't-tasks';
+import { Task } from 't-tasks';
 import { v4 as randomUuid } from 'uuid';
 
 // Simulate a long fetch operation
@@ -15,8 +15,8 @@ const fetchUserData = async (userId: string) => {
   });
 };
 
-// One may also want to lift async function straight to task creator in order to later call it without mandatory liftResult
-// const fetchUserDataTask = liftResultCreator(fetchUserData);
+// One may also want to lift async function straight to task creator in order to later call it without mandatory Task.fromPromise
+// const fetchUserDataTask = Task.lift(fetchUserData);
 
 export const Example = () => {
   const [userId, setUserId] = React.useState<string | null>(null);
@@ -28,9 +28,7 @@ export const Example = () => {
         return null;
       }
 
-      return castResultCreator<typeof fetchUserData>(
-        yield liftResult(fetchUserData(userId)),
-      );
+      return yield* Task.fromPromise(fetchUserData(userId)).generator();
     },
     [userId],
   );

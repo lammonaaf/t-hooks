@@ -50,7 +50,7 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
-    "t-tasks": "^0.7.0"
+    "t-tasks": "^0.8.0"
   },
   "homepage": "https://lammonaaf.github.io/t-hooks",
   "repository": {

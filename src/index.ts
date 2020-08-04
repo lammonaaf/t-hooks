@@ -1,9 +1,4 @@
-import {
-  Task,
-  generateTask,
-  TaskFunction,
-  TaskGeneratorFunction,
-} from 't-tasks';
+import { Task, TaskFunction, TaskGeneratorFunction } from 't-tasks';
 import {
   DependencyList,
   useState,
@@ -82,11 +77,11 @@ export const useTaskEffect = <T>(
  *
  * @see useTaskEffect
  */
-export const useGeneratorEffect = <TT extends Task<any>, R>(
-  taskGeneratorFunction: TaskGeneratorFunction<[], TT, R>,
+export const useGeneratorEffect = <T, TT extends Task<T>, R>(
+  taskGeneratorFunction: TaskGeneratorFunction<[], T, TT, R>,
   deps: DependencyList,
 ) => {
-  return useTaskEffect(() => generateTask(taskGeneratorFunction), deps);
+  return useTaskEffect(() => Task.generate(taskGeneratorFunction), deps);
 };
 
 /**
@@ -189,14 +184,14 @@ export const useTaskMemo = <T>(
  *
  * @see useTaskMemoState
  */
-export const useGeneratorMemoState = <TT extends Task<any>, R>(
+export const useGeneratorMemoState = <T, TT extends Task<T>, R>(
   initialValue: R,
-  taskGeneratorFunction: TaskGeneratorFunction<[], TT, R>,
+  taskGeneratorFunction: TaskGeneratorFunction<[], T, TT, R>,
   deps: DependencyList,
 ) => {
   return useTaskMemoState(
     initialValue,
-    () => generateTask(taskGeneratorFunction),
+    () => Task.generate(taskGeneratorFunction),
     deps,
   );
 };
@@ -217,9 +212,9 @@ export const useGeneratorMemoState = <TT extends Task<any>, R>(
  *
  * @see useGeneratorMemoState
  */
-export const useGeneratorMemo = <TT extends Task<any>, R>(
+export const useGeneratorMemo = <T, TT extends Task<T>, R>(
   initialValue: R,
-  taskGeneratorFunction: TaskGeneratorFunction<[], TT, R>,
+  taskGeneratorFunction: TaskGeneratorFunction<[], T, TT, R>,
   deps: DependencyList,
 ) => {
   const [state] = useGeneratorMemoState(
@@ -340,14 +335,15 @@ export const useTaskCallback = <A extends any[], T>(
  */
 export const useGeneratorCallbackState = <
   A extends any[],
-  TT extends Task<any>,
+  T,
+  TT extends Task<T>,
   R
 >(
-  taskGeneratorFunction: TaskGeneratorFunction<A, TT, R>,
+  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
   deps: DependencyList,
 ) => {
   return useTaskCallbackState((...args: A) => {
-    return generateTask(function*() {
+    return Task.generate(function*() {
       return yield* taskGeneratorFunction(...args);
     });
   }, deps);
@@ -371,8 +367,8 @@ export const useGeneratorCallbackState = <
  *
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
-export const useGeneratorCallback = <A extends any[], TT extends Task<any>, R>(
-  taskGeneratorFunction: TaskGeneratorFunction<A, TT, R>,
+export const useGeneratorCallback = <A extends any[], T, TT extends Task<T>, R>(
+  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
   deps: DependencyList,
 ) => {
   const [callback] = useGeneratorCallbackState(taskGeneratorFunction, deps);
