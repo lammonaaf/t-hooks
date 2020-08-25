@@ -8,9 +8,11 @@ import {
   useGeneratorMemoState,
   useGeneratorMemo,
   useTaskMemo,
-} from '../src';
+} from '../';
 import { Task, Maybe, Either } from 't-tasks';
 import { useState } from 'react';
+
+import 'regenerator-runtime/runtime';
 
 describe('useTaskEffect', () => {
   beforeEach(() => jest.useFakeTimers());
