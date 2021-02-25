@@ -5977,10 +5977,10 @@ symbol-tree@^3.2.2:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-t-tasks@^0.9.1:
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/t-tasks/-/t-tasks-0.9.1.tgz#35a09743b04d93d4f86a7b93e5d32ddfd6a1c92c"
-  integrity sha512-mBaDht7zJhKlzBeCUSXr8IslrblUku/j4oXwvrOHjydUvA7Dt1J0JgDC7MLoJqZwg6IO34R9tM0TTl0ceEWIeg==
+t-tasks@^0.9.2:
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/t-tasks/-/t-tasks-0.9.2.tgz#9ee05564020cac6ef3ff5dba5c2056c0e02e6f79"
+  integrity sha512-oHcs2K+utqzGdA7I2oXoKrVXBFufTJx/0Tfi261WrIRt0MqNBlLi/AgnDDJqps5yVPeynEgvfKcW5rZtOLEEWQ==
 
 table@^5.2.3:
   version "5.4.6"
