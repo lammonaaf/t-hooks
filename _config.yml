@@ -1,7 +1,0 @@
-theme: jekyll-theme-slate
-include:
-  - "classes"
-  - "interfaces"
-  - "modules"
-  - "_*_.md"
-  - "_*_.*.md"
