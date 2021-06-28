@@ -7,10 +7,6 @@ import {
   useCallback,
 } from 'react';
 
-function tuple<Args extends any[]>(...args: Args): Args {
-  return args as Args;
-}
-
 /**
  * Task-invoking hook
  *
@@ -32,7 +28,9 @@ export const useTaskEffect = <T>(
   const [task, setTask] = useState<Task<T> | null>(null);
 
   useEffect(() => {
-    const innerTask = taskFunctionMemo()
+    const innerTask = taskFunctionMemo();
+
+    innerTask
       .tap(() => {
         setTask((current) => (current === innerTask ? null : current));
       })
@@ -59,7 +57,7 @@ export const useTaskEffect = <T>(
 
   const running = !!task;
 
-  return useMemo(() => tuple(running, cancel), [running, cancel]);
+  return useMemo(() => [running, cancel] as const, [running, cancel]);
 };
 
 /**
@@ -111,7 +109,9 @@ export const useTaskMemoState = <T>(
   const [task, setTask] = useState<Task<T> | null>(null);
 
   useEffect(() => {
-    const innerTask = taskFunctionMemo()
+    const innerTask = taskFunctionMemo();
+
+    innerTask
       .tap((result) => {
         setState(result);
 
@@ -140,7 +140,11 @@ export const useTaskMemoState = <T>(
 
   const running = !!task;
 
-  return useMemo(() => tuple(state, running, cancel), [state, running, cancel]);
+  return useMemo(() => [state, running, cancel] as const, [
+    state,
+    running,
+    cancel,
+  ]);
 };
 
 /**
@@ -251,7 +255,9 @@ export const useTaskCallbackState = <A extends any[], T>(
 
   const callback = useCallback(
     (...args: A) => {
-      const innerTask = taskFunctionMemo(...args)
+      const innerTask = taskFunctionMemo(...args);
+
+      innerTask
         .tap(() => {
           setTask((current) => (current === innerTask ? null : current));
         })
@@ -282,7 +288,7 @@ export const useTaskCallbackState = <A extends any[], T>(
 
   const running = !!task;
 
-  return useMemo(() => tuple(callback, running, cancel), [
+  return useMemo(() => [callback, running, cancel] as const, [
     callback,
     running,
     cancel,

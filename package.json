@@ -19,7 +19,7 @@
     "docs": "typedoc --excludeNotExported --out ./docs ./src"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": ">=17"
   },
   "husky": {
     "hooks": {
