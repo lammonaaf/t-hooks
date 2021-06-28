@@ -23,7 +23,7 @@
 
 ▸ **useGeneratorCallback**‹**A**, **T**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, T, TT, R›, `deps`: DependencyList): *(Anonymous function)*
 
-*Defined in [src/index.ts:370](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L370)*
+*Defined in [src/index.ts:376](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L376)*
 
 Generator-based asynchronous callback hook (convinience binding)
 
@@ -68,7 +68,7 @@ ___
 
 ▸ **useGeneratorCallbackState**‹**A**, **T**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹A, T, TT, R›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:336](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L336)*
+*Defined in [src/index.ts:342](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L342)*
 
 Generator-based asynchronous callback hook
 
@@ -113,7 +113,7 @@ ___
 
 ▸ **useGeneratorEffect**‹**T**, **TT**, **R**›(`taskGeneratorFunction`: TaskGeneratorFunction‹[], T, TT, R›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:80](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L80)*
+*Defined in [src/index.ts:78](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L78)*
 
 Generator-invoking hook
 
@@ -152,7 +152,7 @@ ___
 
 ▸ **useGeneratorMemo**‹**T**, **TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], T, TT, R›, `deps`: DependencyList): *R*
 
-*Defined in [src/index.ts:215](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L215)*
+*Defined in [src/index.ts:219](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L219)*
 
 Generator-based asynchronous memo hook (convinience binding)
 
@@ -192,7 +192,7 @@ ___
 
 ▸ **useGeneratorMemoState**‹**T**, **TT**, **R**›(`initialValue`: R, `taskGeneratorFunction`: TaskGeneratorFunction‹[], T, TT, R›, `deps`: DependencyList): *[R, boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:187](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L187)*
+*Defined in [src/index.ts:191](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L191)*
 
 Generator-based asynchronous memo hook
 
@@ -232,7 +232,7 @@ ___
 
 ▸ **useTaskCallback**‹**A**, **T**›(`taskFunction`: TaskFunction‹A, T›, `deps`: DependencyList): *(Anonymous function)*
 
-*Defined in [src/index.ts:309](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L309)*
+*Defined in [src/index.ts:315](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L315)*
 
 Task-based asynchronous callback hook (convinience binding)
 
@@ -271,7 +271,7 @@ ___
 
 ▸ **useTaskCallbackState**‹**A**, **T**›(`taskFunction`: TaskFunction‹A, T›, `deps`: DependencyList): *[(Anonymous function), boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:244](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L244)*
+*Defined in [src/index.ts:248](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L248)*
 
 Task-based asynchronous callback hook
 
@@ -308,7 +308,7 @@ ___
 
 ▸ **useTaskEffect**‹**T**›(`taskFunction`: TaskFunction‹[], T›, `deps`: DependencyList): *[boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:26](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L26)*
+*Defined in [src/index.ts:22](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L22)*
 
 Task-invoking hook
 
@@ -339,7 +339,7 @@ ___
 
 ▸ **useTaskMemo**‹**T**›(`initialValue`: T, `taskFunction`: function, `deps`: DependencyList): *T*
 
-*Defined in [src/index.ts:161](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L161)*
+*Defined in [src/index.ts:165](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L165)*
 
 Task-based asynchronous memo hook (convinience binding)
 
@@ -381,7 +381,7 @@ ___
 
 ▸ **useTaskMemoState**‹**T**›(`initialValue`: T, `taskFunction`: TaskFunction‹[], T›, `deps`: DependencyList): *[T, boolean, (Anonymous function)]*
 
-*Defined in [src/index.ts:100](https://github.com/lammonaaf/t-hooks/blob/598199b/src/index.ts#L100)*
+*Defined in [src/index.ts:98](https://github.com/lammonaaf/t-hooks/blob/3816ded/src/index.ts#L98)*
 
 Task-based asynchronous memo hook
 
