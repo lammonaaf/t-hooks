@@ -1,6 +1,4 @@
-[t-hooks](README.md) › [Globals](globals.md)
-
-# t-hooks
+t-hooks / [Exports](modules.md)
 
 ![CI](https://github.com/lammonaaf/t-hooks/workflows/CI/badge.svg)
 
