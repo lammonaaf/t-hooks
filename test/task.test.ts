@@ -15,7 +15,7 @@ import { useState } from 'react';
 import 'regenerator-runtime/runtime';
 
 describe('useTaskEffect', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -355,7 +355,7 @@ describe('useTaskEffect', () => {
 });
 
 describe('useGeneratorCallbackState', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -696,7 +696,7 @@ describe('useGeneratorCallbackState', () => {
 });
 
 describe('useGeneratorCallback', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -827,7 +827,7 @@ describe('useGeneratorCallback', () => {
 });
 
 describe('useTaskCallback', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -956,7 +956,7 @@ describe('useTaskCallback', () => {
 });
 
 describe('useGeneratorMemoState', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -1193,7 +1193,7 @@ describe('useGeneratorMemoState', () => {
 });
 
 describe('useGeneratorMemo', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -1240,7 +1240,7 @@ describe('useGeneratorMemo', () => {
 });
 
 describe('useTaskMemo', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -1283,7 +1283,7 @@ describe('useTaskMemo', () => {
 });
 
 describe('useGeneratorMemo', () => {
-  beforeEach(() => jest.useFakeTimers());
+  beforeEach(() => jest.useFakeTimers('legacy'));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {

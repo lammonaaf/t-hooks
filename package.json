@@ -1,7 +1,10 @@
 {
-  "version": "0.9.7",
+  "name": "t-hooks",
+  "version": "1.0.0-beta.1",
   "license": "MIT",
-  "main": "dist/index.js",
+  "source": "src/index.ts",
+  "main": "dist/t-hooks.js",
+  "module": "dist/t-hooks.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist",
@@ -11,46 +14,39 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "docs": "typedoc --excludeNotExported --out ./docs ./src"
+    "build": "microbundle",
+    "start": "microbundle watch",
+    "lint": "eslint src --ext js,ts",
+    "test": "jest",
+    "docs": "typedoc --out ./docs ./src"
   },
   "peerDependencies": {
     "react": ">=17"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint"
-    }
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "name": "t-hooks",
-  "author": "ALEXANDER YUSHKOV",
-  "module": "dist/t-hooks.esm.js",
+  "author": "Alexander Yushkov",
   "devDependencies": {
     "@testing-library/react-hooks": "^3.3.0",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.7",
-    "husky": "^4.2.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-test-renderer": "^17.0.2",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.0.0",
-    "typedoc": "^0.17.8",
-    "typedoc-plugin-markdown": "^2.3.1",
-    "typescript": "^3.9.6"
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/jest": "^27.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.9.1",
+    "eslint": "^7.32.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.2.0",
+    "jest": "^27.4.7",
+    "microbundle": "^0.14.2",
+    "typedoc": "^0.22.10",
+    "typedoc-plugin-markdown": "^3.11.11",
+    "typescript": "^4.5.4"
   },
   "dependencies": {
-    "t-tasks": "^0.9.5"
+    "t-tasks": "^1.0.0-beta.1"
   },
   "homepage": "https://lammonaaf.github.io/t-hooks",
   "repository": {
