@@ -69,7 +69,7 @@ callback to be invoked
 
 #### Defined in
 
-[index.ts:376](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L376)
+[index.ts:376](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L376)
 
 ___
 
@@ -111,7 +111,7 @@ callback to be invoked, current execution status (running or not) and cancellati
 
 #### Defined in
 
-[index.ts:342](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L342)
+[index.ts:342](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L342)
 
 ___
 
@@ -150,7 +150,7 @@ current execution status (running or not) and cancellation function
 
 #### Defined in
 
-[index.ts:78](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L78)
+[index.ts:78](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L78)
 
 ___
 
@@ -190,7 +190,7 @@ memorized value
 
 #### Defined in
 
-[index.ts:219](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L219)
+[index.ts:219](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L219)
 
 ___
 
@@ -230,7 +230,7 @@ memorized value, current execution status (running or not) and cancellation func
 
 #### Defined in
 
-[index.ts:191](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L191)
+[index.ts:191](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L191)
 
 ___
 
@@ -282,7 +282,7 @@ callback to be invoked
 
 #### Defined in
 
-[index.ts:315](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L315)
+[index.ts:315](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L315)
 
 ___
 
@@ -320,7 +320,7 @@ callback to be invoked, current execution status (running or not) and cancellati
 
 #### Defined in
 
-[index.ts:248](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L248)
+[index.ts:248](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L248)
 
 ___
 
@@ -355,7 +355,7 @@ current execution status (running or not) and cancellation function
 
 #### Defined in
 
-[index.ts:22](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L22)
+[index.ts:22](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L22)
 
 ___
 
@@ -393,7 +393,7 @@ memorized value
 
 #### Defined in
 
-[index.ts:165](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L165)
+[index.ts:165](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L165)
 
 ___
 
@@ -429,4 +429,4 @@ memorized value, current execution status (running or not) and cancellation func
 
 #### Defined in
 
-[index.ts:98](https://github.com/lammonaaf/t-hooks/blob/274fbb6/src/index.ts#L98)
+[index.ts:98](https://github.com/lammonaaf/t-hooks/blob/e24509f/src/index.ts#L98)
