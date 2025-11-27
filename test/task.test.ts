@@ -15,7 +15,7 @@ import { useState } from 'react';
 import 'regenerator-runtime/runtime';
 
 describe('useTaskEffect', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -355,7 +355,7 @@ describe('useTaskEffect', () => {
 });
 
 describe('useGeneratorCallbackState', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -422,8 +422,8 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith('hello world');
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario2', async () => {
@@ -457,8 +457,8 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith('some-error');
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith('some-error');
   });
 
   it('scenario3', async () => {
@@ -495,8 +495,8 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith();
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith();
   });
 
   it('scenario4', async () => {
@@ -541,10 +541,10 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback1).toBeCalledTimes(1);
-    expect(callback1).toBeCalledWith();
-    expect(callback2).toBeCalledTimes(1);
-    expect(callback2).toBeCalledWith('goodbye world');
+    expect(callback1).toHaveBeenCalledTimes(1);
+    expect(callback1).toHaveBeenCalledWith();
+    expect(callback2).toHaveBeenCalledTimes(1);
+    expect(callback2).toHaveBeenCalledWith('goodbye world');
   });
 
   it('scenario5', async () => {
@@ -589,8 +589,8 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith('hello world');
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario6', async () => {
@@ -650,10 +650,10 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback1).toBeCalledTimes(1);
-    expect(callback1).toBeCalledWith();
-    expect(callback2).toBeCalledTimes(1);
-    expect(callback2).toBeCalledWith('goodbye me');
+    expect(callback1).toHaveBeenCalledTimes(1);
+    expect(callback1).toHaveBeenCalledWith();
+    expect(callback2).toHaveBeenCalledTimes(1);
+    expect(callback2).toHaveBeenCalledWith('goodbye me');
   });
 
   it('scenario7', async () => {
@@ -690,13 +690,13 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith();
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith();
   });
 });
 
 describe('useGeneratorCallback', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -757,8 +757,8 @@ describe('useGeneratorCallback', () => {
       expect(r).toStrictEqual(Maybe.just(Either.right('hello world')));
     });
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(Maybe.just(Either.right('hello world')));
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(Maybe.just(Either.right('hello world')));
   });
 
   it('scenario2', async () => {
@@ -786,8 +786,8 @@ describe('useGeneratorCallback', () => {
       expect(r).toStrictEqual(Maybe.just(Either.left('some-error')));
     });
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(Maybe.just(Either.left('some-error')));
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(Maybe.just(Either.left('some-error')));
   });
 
   it('scenario3', async () => {
@@ -821,13 +821,13 @@ describe('useGeneratorCallback', () => {
       expect(r).toStrictEqual(Maybe.nothing());
     });
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(Maybe.nothing());
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(Maybe.nothing());
   });
 });
 
 describe('useTaskCallback', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -886,8 +886,8 @@ describe('useTaskCallback', () => {
       expect(r).toStrictEqual(Maybe.just(Either.right('hello world')));
     });
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(Maybe.just(Either.right('hello world')));
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(Maybe.just(Either.right('hello world')));
   });
 
   it('scenario2', async () => {
@@ -915,8 +915,8 @@ describe('useTaskCallback', () => {
       expect(r).toStrictEqual(Maybe.just(Either.left('some-error')));
     });
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(Maybe.just(Either.left('some-error')));
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(Maybe.just(Either.left('some-error')));
   });
 
   it('scenario3', async () => {
@@ -950,13 +950,13 @@ describe('useTaskCallback', () => {
       expect(r).toStrictEqual(Maybe.nothing());
     });
 
-    expect(callback).toBeCalledTimes(1);
-    expect(callback).toBeCalledWith(Maybe.nothing());
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith(Maybe.nothing());
   });
 });
 
 describe('useGeneratorMemoState', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -1193,7 +1193,7 @@ describe('useGeneratorMemoState', () => {
 });
 
 describe('useGeneratorMemo', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -1240,7 +1240,7 @@ describe('useGeneratorMemo', () => {
 });
 
 describe('useTaskMemo', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
@@ -1283,7 +1283,7 @@ describe('useTaskMemo', () => {
 });
 
 describe('useGeneratorMemo', () => {
-  beforeEach(() => jest.useFakeTimers('legacy'));
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
   const flushPromises = async () => {
