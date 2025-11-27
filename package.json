@@ -25,7 +25,7 @@
   },
   "author": "Alexander Yushkov",
   "devDependencies": {
-    "@babel/preset-typescript": "^7.23.3",
+    "@babel/preset-typescript": "^7.28.5",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/jest": "^30.0.0",
     "@types/react": "^18.3.26",
