@@ -39,6 +39,10 @@ export const useTaskEffect = <T>(
       });
 
     setTask(innerTask);
+
+    return () => {
+      setTimeout(() => innerTask.cancel());
+    };
   }, [taskFunctionMemo, setTask]);
 
   const cancel = useCallback(() => setTask(null), [setTask]);
@@ -48,7 +52,7 @@ export const useTaskEffect = <T>(
 
     if (innerTask) {
       return () => {
-        innerTask.cancel();
+        setTimeout(() => innerTask.cancel());
       };
     } else {
       return undefined;
@@ -100,8 +104,6 @@ export const useTaskMemoState = <T>(
   taskFunction: TaskFunction<[], T>,
   deps: DependencyList,
 ) => {
-  const inst = useMemo(() => Math.trunc(Math.random() * 100), []);
-
   const [state, setState] = useState<T>(initialValue);
 
   const taskFunctionMemo = useCallback(taskFunction, deps);
@@ -119,24 +121,30 @@ export const useTaskMemoState = <T>(
       })
       .tapRejected(() => {
         setTask((current) => (current === innerTask ? null : current));
-      });
+      })
 
     setTask(innerTask);
-  }, [taskFunctionMemo, setTask, setState, inst]);
 
-  const cancel = useCallback(() => setTask(null), [setTask]);
+    return () => {
+      setTimeout(() => innerTask.cancel());
+    };
+  }, [taskFunctionMemo, setTask, setState]);
+
+  const cancel = useCallback(() => {
+    setTask(null);
+  }, [setTask]);
 
   useEffect(() => {
     const innerTask = task;
 
     if (innerTask) {
       return () => {
-        innerTask.cancel();
+        setTimeout(() => innerTask.cancel());
       };
     } else {
       return undefined;
     }
-  }, [task, inst]);
+  }, [task]);
 
   const running = !!task;
 
@@ -279,7 +287,7 @@ export const useTaskCallbackState = <A extends any[], T>(
 
     if (innerTask) {
       return () => {
-        innerTask.cancel();
+        setTimeout(() => innerTask.cancel());
       };
     } else {
       return undefined;
