@@ -253,32 +253,27 @@ export const useGeneratorMemo = <T, TT extends Task<T>, R>(
  *
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
-export const useTaskCallbackState = <A extends any[], T>(
-  taskFunction: TaskFunction<A, T>,
+export const useTaskCallbackState = <A extends any[]>(
+  taskFunction: TaskFunction<A, void>,
   deps: DependencyList,
 ) => {
-  const [task, setTask] = useState<Task<T> | null>(null);
+  const [task, setTask] = useState<Task<void> | null>(null);
 
   const taskFunctionMemo = useCallback(taskFunction, deps);
 
-  const callback = useCallback(
-    (...args: A) => {
-      const innerTask = taskFunctionMemo(...args);
+  const callback = useCallback((...args: A): void => {
+    const innerTask = taskFunctionMemo(...args);
 
-      innerTask
-        .tap(() => {
-          setTask((current) => (current === innerTask ? null : current));
-        })
-        .tapRejected(() => {
-          setTask((current) => (current === innerTask ? null : current));
-        });
+    innerTask
+      .tap(() => {
+        setTask((current) => (current === innerTask ? null : current));
+      })
+      .tapRejected(() => {
+        setTask((current) => (current === innerTask ? null : current));
+      });
 
-      setTask(innerTask);
-
-      return innerTask;
-    },
-    [setTask, taskFunctionMemo],
-  );
+    setTask(innerTask);
+  }, [setTask, taskFunctionMemo]);
 
   const cancel = useCallback(() => setTask(null), [setTask]);
 
@@ -320,8 +315,8 @@ export const useTaskCallbackState = <A extends any[], T>(
  *
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
-export const useTaskCallback = <A extends any[], T>(
-  taskFunction: TaskFunction<A, T>,
+export const useTaskCallback = <A extends any[]>(
+  taskFunction: TaskFunction<A, void>,
   deps: DependencyList,
 ) => {
   const [callback] = useTaskCallbackState(taskFunction, deps);
@@ -347,20 +342,11 @@ export const useTaskCallback = <A extends any[], T>(
  *
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
-export const useGeneratorCallbackState = <
-  A extends any[],
-  T,
-  TT extends Task<T>,
-  R
->(
-  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
+export const useGeneratorCallbackState = <A extends any[], T, TT extends Task<T>>(
+  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, void>,
   deps: DependencyList,
 ) => {
-  return useTaskCallbackState((...args: A) => {
-    return Task.generate(function*() {
-      return yield* taskGeneratorFunction(...args);
-    });
-  }, deps);
+  return useTaskCallbackState(Task.generateFunction(taskGeneratorFunction), deps);
 };
 
 /**
@@ -381,8 +367,8 @@ export const useGeneratorCallbackState = <
  *
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
-export const useGeneratorCallback = <A extends any[], T, TT extends Task<T>, R>(
-  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
+export const useGeneratorCallback = <A extends any[], T, TT extends Task<T>>(
+  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, void>,
   deps: DependencyList,
 ) => {
   const [callback] = useGeneratorCallbackState(taskGeneratorFunction, deps);
