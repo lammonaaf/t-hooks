@@ -30,6 +30,8 @@ describe('useGeneratorEffect', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -722,6 +724,8 @@ describe('useGeneratorCallbackState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -1078,6 +1082,8 @@ describe('useGeneratorCallback', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -1091,7 +1097,7 @@ describe('useGeneratorCallback', () => {
   }) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
-    const [callback, running, cancel] = useGeneratorCallbackState(
+    const callback = useGeneratorCallback(
       function*(prefix: string) {
         try {
           setState('start');
@@ -1114,7 +1120,7 @@ describe('useGeneratorCallback', () => {
       [setState, data],
     );
 
-    return { state, callback, running, cancel };
+    return { state, callback };
   };
 
   it('scenario1', async () => {
@@ -1374,6 +1380,8 @@ describe('useTaskCallbackState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -1724,6 +1732,8 @@ describe('useTaskCallback', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2014,6 +2024,8 @@ describe('useGeneratorMemoState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2261,6 +2273,8 @@ describe('useTaskMemoState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2507,6 +2521,8 @@ describe('useGeneratorMemo', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2557,6 +2573,8 @@ describe('useTaskMemo', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2603,6 +2621,8 @@ describe('useGeneratorMemo', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
