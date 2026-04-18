@@ -30,6 +30,8 @@ describe('useGeneratorEffect', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -722,27 +724,40 @@ describe('useGeneratorCallbackState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
   };
 
-  const useTestCase = (data: string) => {
+  const useTestCase = ({ data, success, error, done }: {
+    data: string,
+    success?: (result: string) => void;
+    error?: (result: unknown) => void;
+    done?: () => void;
+  }) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
     const [callback, running, cancel] = useGeneratorCallbackState(
       function*(prefix: string) {
-        setState('start');
+        try {
+          setState('start');
 
-        yield* Task.timeout(1000).generator();
+          yield* Task.timeout(1000).generator();
 
-        if (prefix === 'throw') {
-          throw 'some-error';
+          if (prefix === 'throw') {
+            throw 'some-error';
+          }
+
+          setState('end');
+
+          success?.(prefix + data);
+        } catch (err) {
+          error?.(err);
+        } finally {
+          done?.();
         }
-
-        setState('end');
-
-        return prefix + data;
       },
       [setState, data],
     );
@@ -751,21 +766,20 @@ describe('useGeneratorCallbackState', () => {
   };
 
   it('scenario1', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -782,26 +796,27 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario2', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('throw').tapRejected((r) => {
-        callback(r);
-        expect(r).toStrictEqual('some-error');
-      });
+      result.current.callback('throw');
     });
 
     await act(async () => {
@@ -818,25 +833,27 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('some-error');
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('some-error');
   });
 
   it('scenario3', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, unmount } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -857,26 +874,26 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith();
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(0);
   });
 
   it('scenario4', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -884,10 +901,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye world');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -904,28 +918,27 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
   it('scenario5', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -940,7 +953,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     expect(result.current.state).toBe('start');
@@ -953,26 +966,27 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario6', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -987,7 +1001,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     await act(async () => {
@@ -995,10 +1009,7 @@ describe('useGeneratorCallbackState', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye me');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -1015,27 +1026,27 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye me');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye me');
   });
 
   it('scenario7', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1056,8 +1067,9 @@ describe('useGeneratorCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith();
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -1070,27 +1082,40 @@ describe('useGeneratorCallback', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
   };
 
-  const useTestCase = (data: string) => {
+  const useTestCase = ({ data, success, error, done }: {
+    data: string,
+    success?: (result: string) => void;
+    error?: (result: unknown) => void;
+    done?: () => void;
+  }) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
     const callback = useGeneratorCallback(
       function*(prefix: string) {
-        setState('start');
+        try {
+          setState('start');
 
-        yield* Task.timeout(1000).generator();
+          yield* Task.timeout(1000).generator();
 
-        if (prefix === 'throw') {
-          throw 'some-error';
+          if (prefix === 'throw') {
+            throw 'some-error';
+          }
+
+          setState('end');
+
+          success?.(prefix + data);
+        } catch (err) {
+          error?.(err);
+        } finally {
+          done?.();
         }
-
-        setState('end');
-
-        return prefix + data;
       },
       [setState, data],
     );
@@ -1099,20 +1124,19 @@ describe('useGeneratorCallback', () => {
   };
 
   it('scenario1', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1127,25 +1151,26 @@ describe('useGeneratorCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario2', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('throw').tapRejected((r) => {
-        callback(r);
-        expect(r).toStrictEqual('some-error');
-      });
+      result.current.callback('throw');
     });
 
     await act(async () => {
@@ -1160,24 +1185,26 @@ describe('useGeneratorCallback', () => {
 
     expect(result.current.state).toBe('start');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('some-error');
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('some-error');
   });
 
   it('scenario3', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, unmount } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1196,25 +1223,25 @@ describe('useGeneratorCallback', () => {
 
     expect(result.current.state).toBe('start');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith();
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(0);
   });
 
   it('scenario4', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1222,10 +1249,7 @@ describe('useGeneratorCallback', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye world');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -1240,27 +1264,26 @@ describe('useGeneratorCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
   it('scenario5', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1274,7 +1297,7 @@ describe('useGeneratorCallback', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     expect(result.current.state).toBe('start');
@@ -1285,25 +1308,26 @@ describe('useGeneratorCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario6', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1317,7 +1341,7 @@ describe('useGeneratorCallback', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     await act(async () => {
@@ -1325,10 +1349,7 @@ describe('useGeneratorCallback', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye me');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -1343,10 +1364,10 @@ describe('useGeneratorCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye me');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye me');
   });
 });
 
@@ -1359,12 +1380,19 @@ describe('useTaskCallbackState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
   };
 
-  const useTestCase = (data: string) => {
+  const useTestCase = ({ data, success, error, done }: {
+    data: string,
+    success?: (result: string) => void;
+    error?: (result: unknown) => void;
+    done?: () => void;
+  }) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
     const [callback, running, cancel] = useTaskCallbackState(
@@ -1378,7 +1406,9 @@ describe('useTaskCallbackState', () => {
             }
           })
           .tap(() => setState('end'))
-          .map(() => prefix + data),
+          .tap(() => success?.(prefix + data))
+          .tapRejected((err) => error?.(err))
+          .matchTap({ resolved: () => done?.(), rejected: () => done?.(), canceled: () => void undefined }),
       [setState, data],
     );
 
@@ -1386,21 +1416,20 @@ describe('useTaskCallbackState', () => {
   };
 
   it('scenario1', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1417,26 +1446,27 @@ describe('useTaskCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario2', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('throw').tapRejected((r) => {
-        callback(r);
-        expect(r).toStrictEqual('some-error');
-      });
+      result.current.callback('throw');
     });
 
     await act(async () => {
@@ -1453,25 +1483,27 @@ describe('useTaskCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('some-error');
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('some-error');
   });
 
   it('scenario3', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, unmount } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1492,26 +1524,26 @@ describe('useTaskCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith();
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(0);
   });
 
   it('scenario4', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1519,10 +1551,7 @@ describe('useTaskCallbackState', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye world');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -1539,28 +1568,27 @@ describe('useTaskCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
   it('scenario5', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1575,7 +1603,7 @@ describe('useTaskCallbackState', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     expect(result.current.state).toBe('start');
@@ -1588,26 +1616,27 @@ describe('useTaskCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario6', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1622,7 +1651,7 @@ describe('useTaskCallbackState', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     await act(async () => {
@@ -1630,10 +1659,7 @@ describe('useTaskCallbackState', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye me');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -1650,27 +1676,27 @@ describe('useTaskCallbackState', () => {
     expect(result.current.state).toBe('end');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye me');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye me');
   });
 
   it('scenario7', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
     expect(result.current.running).toBeFalsy();
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1691,8 +1717,9 @@ describe('useTaskCallbackState', () => {
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeFalsy();
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith();
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -1705,12 +1732,19 @@ describe('useTaskCallback', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
   };
 
-  const useTestCase = (data: string) => {
+  const useTestCase = ({ data, success, error, done }: {
+    data: string,
+    success?: (result: string) => void;
+    error?: (result: unknown) => void;
+    done?: () => void;
+  }) => {
     const [state, setState] = useState<'none' | 'start' | 'end'>('none');
 
     const callback = useTaskCallback(
@@ -1724,7 +1758,9 @@ describe('useTaskCallback', () => {
             }
           })
           .tap(() => setState('end'))
-          .map(() => prefix + data),
+          .tap(() => success?.(prefix + data))
+          .tapRejected((err) => error?.(err))
+          .matchTap({ resolved: () => done?.(), rejected: () => done?.(), canceled: () => void undefined }),
       [setState, data],
     );
 
@@ -1732,20 +1768,19 @@ describe('useTaskCallback', () => {
   };
 
   it('scenario1', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1760,25 +1795,26 @@ describe('useTaskCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario2', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('throw').tapRejected((r) => {
-        callback(r);
-        expect(r).toStrictEqual('some-error');
-      });
+      result.current.callback('throw');
     });
 
     await act(async () => {
@@ -1793,24 +1829,26 @@ describe('useTaskCallback', () => {
 
     expect(result.current.state).toBe('start');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('some-error');
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('some-error');
   });
 
   it('scenario3', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, unmount } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1829,25 +1867,25 @@ describe('useTaskCallback', () => {
 
     expect(result.current.state).toBe('start');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith();
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(0);
   });
 
   it('scenario4', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1855,10 +1893,7 @@ describe('useTaskCallback', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye world');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -1873,27 +1908,26 @@ describe('useTaskCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
   it('scenario5', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tap((r) => {
-        callback(r);
-        expect(r).toStrictEqual('hello world');
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1907,7 +1941,7 @@ describe('useTaskCallback', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     expect(result.current.state).toBe('start');
@@ -1918,25 +1952,26 @@ describe('useTaskCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback).toHaveBeenCalledTimes(1);
-    expect(callback).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
   });
 
   it('scenario6', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
     const { result, rerender } = renderHook(useTestCase, {
-      initialProps: ' world',
+      initialProps: { data: ' world', success, error, done },
       reactStrictMode,
     });
-
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
 
     expect(result.current.state).toBe('none');
 
     act(() => {
-      result.current.callback('hello').tapCanceled(() => {
-        callback1();
-      });
+      result.current.callback('hello');
     });
 
     await act(async () => {
@@ -1950,7 +1985,7 @@ describe('useTaskCallback', () => {
     });
 
     act(() => {
-      rerender(' me');
+      rerender({ data: ' me', success, error, done });
     });
 
     await act(async () => {
@@ -1958,10 +1993,7 @@ describe('useTaskCallback', () => {
     });
 
     act(() => {
-      result.current.callback('goodbye').tap((r) => {
-        callback2(r);
-        expect(r).toStrictEqual('goodbye me');
-      });
+      result.current.callback('goodbye');
     });
 
     await act(async () => {
@@ -1976,10 +2008,10 @@ describe('useTaskCallback', () => {
 
     expect(result.current.state).toBe('end');
 
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback1).toHaveBeenCalledWith();
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledWith('goodbye me');
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('goodbye me');
   });
 });
 
@@ -1992,6 +2024,8 @@ describe('useGeneratorMemoState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2239,6 +2273,8 @@ describe('useTaskMemoState', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2485,6 +2521,8 @@ describe('useGeneratorMemo', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2535,6 +2573,8 @@ describe('useTaskMemo', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -2581,6 +2621,8 @@ describe('useGeneratorMemo', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
