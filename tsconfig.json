@@ -1,24 +1,21 @@
 {
-  "include": ["src", "types"],
+  "include": ["src", "types", "test"],
   "compilerOptions": {
-    "module": "esnext",
-    "target": "es2015",
+    "target": "ES2020",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
-    "rootDir": "./src",
+    "rootDir": ".",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "strictNullChecks": true,
-    "baseUrl": "./",
-    "paths": {
-      "*": ["src/*", "node_modules/*"]
-    },
+    "types": ["node", "jest"],
     "jsx": "react",
     "esModuleInterop": true
   }
