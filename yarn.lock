@@ -7094,10 +7094,10 @@ synckit@^0.11.8:
   dependencies:
     "@pkgr/core" "^0.2.9"
 
-t-tasks@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/t-tasks/-/t-tasks-1.2.0.tgz#aafdd007c266ddf0a68a24d12f581fb04cc37e52"
-  integrity sha512-oaAmf3dgUtQ+t7LWbl/GAgiM3lknQRrup13AIkP+HpXX751wfw1G9Nn2eptjkmVct6ej7K3zT9M7gOXkEnFmoA==
+t-tasks@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/t-tasks/-/t-tasks-1.2.1.tgz#8526a72e1978e350e340f97caced0f9d38747c87"
+  integrity sha512-CBqzZH2sYPD2rAo/VgEJmmZMgyikh/pr66NGoqbP7gy80uuMwzoFr40ldEWrYDYzNLCfHKmXRABl9cZl7Y4H1A==
 
 table@^6.0.9:
   version "6.8.1"
