@@ -303,7 +303,7 @@ const useInternalTaskCallbackState = <A extends any[], R>(
 export const useTaskCallbackState = <A extends any[]>(
   taskFunction: TaskFunction<A, void>,
   deps: DependencyList,
-) => useInternalTaskCallbackState(taskFunction, deps);
+): readonly [(...args: A) => void, boolean, () => void] => useInternalTaskCallbackState(taskFunction, deps);
 
 /** @deprecated */
 export const useCompatTaskCallbackState = <A extends any[], R>(
