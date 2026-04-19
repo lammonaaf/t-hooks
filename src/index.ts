@@ -338,8 +338,8 @@ export const useTaskCallback = <A extends any[]>(
 };
 
 /** @deprecated */
-export const useCompatTaskCallback = <A extends any[]>(
-  taskFunction: TaskFunction<A, void>,
+export const useCompatTaskCallback = <A extends any[], R>(
+  taskFunction: TaskFunction<A, R>,
   deps: DependencyList,
 ) => {
   const [callback] = useCompatTaskCallbackState(taskFunction, deps);
@@ -407,8 +407,8 @@ export const useGeneratorCallback = <A extends any[], T, TT extends Task<T>>(
   return callback;
 };
 
-export const useCompatGeneratorCallback = <A extends any[], T, TT extends Task<T>>(
-  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, void>,
+export const useCompatGeneratorCallback = <A extends any[], T, TT extends Task<T>, R>(
+  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
   deps: DependencyList,
 ) => {
   const [callback] = useCompatGeneratorCallbackState(taskGeneratorFunction, deps);
