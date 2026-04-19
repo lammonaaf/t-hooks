@@ -407,6 +407,7 @@ export const useGeneratorCallback = <A extends any[], T, TT extends Task<T>>(
   return callback;
 };
 
+/** @deprecated */
 export const useCompatGeneratorCallback = <A extends any[], T, TT extends Task<T>, R>(
   taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
   deps: DependencyList,
