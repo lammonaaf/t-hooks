@@ -1721,6 +1721,110 @@ describe('useMultiGeneratorCallback', () => {
     expect(error).toHaveBeenCalledTimes(0);
     expect(done).toHaveBeenCalledTimes(0);
   });
+
+  it('scenario8', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result, unmount } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('hello');
+      result.current.callback('salut');
+      result.current.callback('kaput');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(250);
+    });
+
+    act(() => {
+      unmount();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('start');
+
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(0);
+  });
+
+  it('scenario9', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result, unmount } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('hello');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(250);
+    });
+
+    act(() => {
+      result.current.callback('salut');
+    });
+
+    await act(async () => {
+      await advanceTime(250);
+    });
+
+    act(() => {
+      result.current.callback('kaput');
+    });
+
+    await act(async () => {
+      await advanceTime(750);
+    });
+
+    expect(result.current.state).toBe('end');
+
+    act(() => {
+      unmount();
+    });
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+
+    expect(success).toHaveBeenCalledTimes(2);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('useTaskCallbackState', () => {
