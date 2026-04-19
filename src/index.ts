@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useCallback,
+  useRef,
 } from 'react';
 
 /**
@@ -238,7 +239,67 @@ export const useGeneratorMemo = <T, TT extends Task<T>, R>(
   return state;
 };
 
-const useInternalTaskCallbackState = <A extends any[], R>(
+/**
+ * Task-based asynchronous callback hook
+ *
+ * Task equivalent to useCallback hook allowing to perform asynchronous callbacks
+ *
+ * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
+ *
+ * @template A callback arguments type
+ * @param taskFunction task taskFunction to be invoked as callback
+ * @param deps dependency list
+ * @returns callback to be invoked, current execution status (running or not) and cancellation function
+ *
+ * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
+ */
+export const useTaskCallbackState = <A extends any[]>(
+  taskFunction: TaskFunction<A, void>,
+  deps: DependencyList,
+) => {
+  const [task, setTask] = useState<Task<void> | null>(null);
+
+  const taskFunctionMemo = useCallback(taskFunction, deps);
+
+  const callback = useCallback((...args: A): void => {
+    const innerTask = taskFunctionMemo(...args);
+
+    innerTask
+      .tap(() => {
+        setTask((current) => (current === innerTask ? null : current));
+      })
+      .tapRejected(() => {
+        setTask((current) => (current === innerTask ? null : current));
+      });
+
+    setTask(innerTask);
+  }, [setTask, taskFunctionMemo]);
+
+  const cancel = useCallback(() => setTask(null), [setTask]);
+
+  useEffect(() => {
+    const innerTask = task;
+
+    if (innerTask) {
+      return () => {
+        setTimeout(() => innerTask.cancel());
+      };
+    } else {
+      return undefined;
+    }
+  }, [task]);
+
+  const running = !!task;
+
+  return useMemo(() => [callback, running, cancel] as const, [
+    callback,
+    running,
+    cancel,
+  ]);
+};
+
+/** @deprecated */
+export const useCompatTaskCallbackState = <A extends any[], R>(
   taskFunction: TaskFunction<A, R>,
   deps: DependencyList,
 ) => {
@@ -286,32 +347,6 @@ const useInternalTaskCallbackState = <A extends any[], R>(
 };
 
 /**
- * Task-based asynchronous callback hook
- *
- * Task equivalent to useCallback hook allowing to perform asynchronous callbacks
- *
- * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
- *
- * @template A callback arguments type
- * @template T resulting task resolve type
- * @param taskFunction task taskFunction to be invoked as callback
- * @param deps dependency list
- * @returns callback to be invoked, current execution status (running or not) and cancellation function
- *
- * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
- */
-export const useTaskCallbackState = <A extends any[]>(
-  taskFunction: TaskFunction<A, void>,
-  deps: DependencyList,
-): readonly [(...args: A) => void, boolean, () => void] => useInternalTaskCallbackState(taskFunction, deps);
-
-/** @deprecated */
-export const useCompatTaskCallbackState = <A extends any[], R>(
-  taskFunction: TaskFunction<A, R>,
-  deps: DependencyList,
-) => useInternalTaskCallbackState(taskFunction, deps);
-
-/**
  * Task-based asynchronous callback hook (convinience binding)
  *
  * Task equivalent to useCallback hook allowing to perform asynchronous callbacks
@@ -319,7 +354,6 @@ export const useCompatTaskCallbackState = <A extends any[], R>(
  * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
  *
  * @template A callback arguments type
- * @template T resulting task resolve type
  * @param taskFunction task taskFunction to be invoked as callback
  * @param deps dependency list
  * @returns callback to be invoked
@@ -356,7 +390,6 @@ export const useCompatTaskCallback = <A extends any[], R>(
  *
  * @template A callback arguments type
  * @template TT yielded task type
- * @template R resulting task resolve type
  * @param taskGeneratorFunction task generator function
  * @param deps dependency list
  * @returns callback to be invoked, current execution status (running or not) and cancellation function
@@ -389,7 +422,6 @@ export const useCompatGeneratorCallbackState = <A extends any[], T, TT extends T
  *
  * @template A callback arguments type
  * @template TT yielded task type
- * @template R resulting task resolve type
  * @param taskGeneratorFunction task generator function
  * @param deps dependency list
  * @returns callback to be invoked
@@ -415,4 +447,42 @@ export const useCompatGeneratorCallback = <A extends any[], T, TT extends Task<T
   const [callback] = useCompatGeneratorCallbackState(taskGeneratorFunction, deps);
 
   return callback;
+};
+
+export const useMultiTaskCallback = <A extends any[]>(
+  taskFunction: TaskFunction<A, void>,
+  deps: DependencyList,
+) => {
+  const tasks = useRef<Task<void>[]>([]);
+
+  const taskFunctionMemo = useCallback(taskFunction, deps);
+
+  const callback = useCallback((...args: A): void => {
+    const innerTask = taskFunctionMemo(...args);
+
+    innerTask
+      .tap(() => {
+        tasks.current = tasks.current.filter((task) => task !== innerTask);
+      })
+      .tapRejected(() => {
+        tasks.current = tasks.current.filter((task) => task !== innerTask);
+      });
+
+    tasks.current.push(innerTask);
+  }, [taskFunctionMemo]);
+
+  useEffect(() => {
+    return () => {
+      tasks.current.forEach((task) => task.cancel());
+    };
+  }, []);
+
+  return callback;
+};
+
+export const useMultiGeneratorCallback = <A extends any[], T, TT extends Task<T>>(
+  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, void>,
+  deps: DependencyList,
+) => {
+  return useMultiTaskCallback(Task.generateFunction(taskGeneratorFunction), deps);
 };
