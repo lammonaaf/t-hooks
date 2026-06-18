@@ -10,7 +10,7 @@
     "@types/uuid": "^9.0.8",
     "react-app-polyfill": "^3.0.0",
     "regenerator-runtime": "^0.14.1",
-    "uuid": "^9.0.1"
+    "uuid": "^14.0.0"
   },
   "alias": {
     "t-tasks": "../../node_modules/t-tasks",
