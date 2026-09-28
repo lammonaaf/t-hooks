@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { setImmediate } from 'timers';
 
 import 'regenerator-runtime/runtime';
+import { useFreeGeneratorCallback } from '../src';
 
 const reactStrictMode = false;
 
@@ -67,13 +68,6 @@ describe('useGeneratorEffect', () => {
       reactStrictMode,
     });
 
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
-    });
-
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
@@ -89,13 +83,6 @@ describe('useGeneratorEffect', () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'throw' as string | null,
       reactStrictMode,
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -129,13 +116,6 @@ describe('useGeneratorEffect', () => {
       rerender('true');
     });
 
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
-    });
-
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
@@ -165,13 +145,6 @@ describe('useGeneratorEffect', () => {
 
     act(() => {
       rerender('true');
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -218,13 +191,6 @@ describe('useGeneratorEffect', () => {
 
     act(() => {
       rerender('true');
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -286,13 +252,6 @@ describe('useGeneratorEffect', () => {
       rerender('true');
     });
 
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
-    });
-
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
@@ -336,13 +295,6 @@ describe('useGeneratorEffect', () => {
 
     act(() => {
       rerender('true');
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -380,6 +332,8 @@ describe('useTaskEffect', () => {
   };
 
   const advanceTime = async (by: number) => {
+    await flushPromises();
+
     jest.advanceTimersByTime(by);
 
     return flushPromises();
@@ -412,13 +366,6 @@ describe('useTaskEffect', () => {
       reactStrictMode,
     });
 
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
-    });
-
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
@@ -434,13 +381,6 @@ describe('useTaskEffect', () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'throw' as string | null,
       reactStrictMode,
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -474,13 +414,6 @@ describe('useTaskEffect', () => {
       rerender('true');
     });
 
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
-    });
-
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
@@ -510,13 +443,6 @@ describe('useTaskEffect', () => {
 
     act(() => {
       rerender('true');
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -563,13 +489,6 @@ describe('useTaskEffect', () => {
 
     act(() => {
       rerender('true');
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -631,13 +550,6 @@ describe('useTaskEffect', () => {
       rerender('true');
     });
 
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
-    });
-
     expect(result.current.state).toBe('start');
     expect(result.current.running).toBeTruthy();
 
@@ -681,13 +593,6 @@ describe('useTaskEffect', () => {
 
     act(() => {
       rerender('true');
-    });
-
-    expect(result.current.state).toBe('none');
-    expect(result.current.running).toBeTruthy();
-
-    await act(async () => {
-      await flushPromises();
     });
 
     expect(result.current.state).toBe('start');
@@ -877,7 +782,7 @@ describe('useGeneratorCallbackState', () => {
 
     expect(success).toHaveBeenCalledTimes(0);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
   });
 
   it('scenario4', async () => {
@@ -921,7 +826,7 @@ describe('useGeneratorCallbackState', () => {
 
     expect(success).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(2);
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
@@ -1029,7 +934,7 @@ describe('useGeneratorCallbackState', () => {
 
     expect(success).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(2);
     expect(success).toHaveBeenCalledWith('goodbye me');
   });
 
@@ -1070,7 +975,7 @@ describe('useGeneratorCallbackState', () => {
 
     expect(success).toHaveBeenCalledTimes(0);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -1226,7 +1131,7 @@ describe('useGeneratorCallback', () => {
 
     expect(success).toHaveBeenCalledTimes(0);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
   });
 
   it('scenario4', async () => {
@@ -1267,7 +1172,7 @@ describe('useGeneratorCallback', () => {
 
     expect(success).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(2);
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
@@ -1367,7 +1272,7 @@ describe('useGeneratorCallback', () => {
 
     expect(success).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(2);
     expect(success).toHaveBeenCalledWith('goodbye me');
   });
 });
@@ -1524,7 +1429,7 @@ describe('useMultiGeneratorCallback', () => {
 
     expect(success).toHaveBeenCalledTimes(0);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
   });
 
   it('scenario4', async () => {
@@ -1719,7 +1624,7 @@ describe('useMultiGeneratorCallback', () => {
 
     expect(success).toHaveBeenCalledTimes(0);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(2);
   });
 
   it('scenario8', async () => {
@@ -1764,7 +1669,7 @@ describe('useMultiGeneratorCallback', () => {
 
     expect(success).toHaveBeenCalledTimes(0);
     expect(error).toHaveBeenCalledTimes(0);
-    expect(done).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(3);
   });
 
   it('scenario9', async () => {
@@ -1823,7 +1728,307 @@ describe('useMultiGeneratorCallback', () => {
 
     expect(success).toHaveBeenCalledTimes(2);
     expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe('useFreeGeneratorCallback', () => {
+  beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
+  afterEach(() => jest.useRealTimers());
+
+  const flushPromises = async () => {
+    return new Promise((resolve) => setImmediate(resolve));
+  };
+
+  const advanceTime = async (by: number) => {
+    await flushPromises();
+
+    jest.advanceTimersByTime(by);
+
+    return flushPromises();
+  };
+
+  const useTestCase = ({ data, success, error, done }: {
+    data: string,
+    success?: (result: string) => void;
+    error?: (result: unknown) => void;
+    done?: () => void;
+  }) => {
+    const [state, setState] = useState<'none' | 'start' | 'end'>('none');
+
+    const callback = useFreeGeneratorCallback(
+      function*(prefix: string) {
+        try {
+          setState('start');
+
+          yield* Task.timeout(1000).generator();
+
+          if (prefix === 'throw') {
+            throw 'some-error';
+          }
+
+          setState('end');
+
+          success?.(prefix + data);
+        } catch (err) {
+          error?.(err);
+        } finally {
+          done?.();
+        }
+      },
+      [setState, data],
+    );
+
+    return { state, callback };
+  };
+
+  it('scenario1', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('hello');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
+  });
+
+  it('scenario2', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('throw');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('start');
+
+    expect(success).toHaveBeenCalledTimes(0);
+    expect(error).toHaveBeenCalledTimes(1);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledWith('some-error');
+  });
+
+  it('scenario3', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result, unmount } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('hello');
+    });
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    act(() => {
+      unmount();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.state).toBe('start');
+
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+  });
+
+  it('scenario4', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('hello');
+    });
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    act(() => {
+      result.current.callback('goodbye');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+
+    expect(success).toHaveBeenCalledTimes(2);
+    expect(error).toHaveBeenCalledTimes(0);
     expect(done).toHaveBeenCalledTimes(2);
+    expect(success).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledWith('goodbye world');
+  });
+
+  it('scenario5', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result, rerender } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('hello');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    act(() => {
+      rerender({ data: ' me', success, error, done });
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(500);
+    });
+
+    expect(result.current.state).toBe('end');
+
+    expect(success).toHaveBeenCalledTimes(1);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(success).toHaveBeenCalledWith('hello world');
+  });
+
+  it('scenario6', async () => {
+    const success = jest.fn();
+    const error = jest.fn();
+    const done = jest.fn();
+
+    const { result, rerender } = renderHook(useTestCase, {
+      initialProps: { data: ' world', success, error, done },
+      reactStrictMode,
+    });
+
+    expect(result.current.state).toBe('none');
+
+    act(() => {
+      result.current.callback('hello');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(250);
+    });
+
+    act(() => {
+      rerender({ data: ' me', success, error, done });
+    });
+
+    await act(async () => {
+      await advanceTime(250);
+    });
+
+    act(() => {
+      result.current.callback('goodbye');
+    });
+
+    await act(async () => {
+      await flushPromises();
+    });
+
+    expect(result.current.state).toBe('start');
+
+    await act(async () => {
+      await advanceTime(1000);
+    });
+
+    expect(result.current.state).toBe('end');
+
+    expect(success).toHaveBeenCalledTimes(2);
+    expect(error).toHaveBeenCalledTimes(0);
+    expect(done).toHaveBeenCalledTimes(2);
+    expect(success).toHaveBeenCalledWith('hello world');
+    expect(success).toHaveBeenCalledWith('goodbye me');
   });
 });
 
