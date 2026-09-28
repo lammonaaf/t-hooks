@@ -2,10 +2,9 @@
   "name": "t-hooks",
   "version": "1.2.4",
   "license": "MIT",
-  "source": "src/index.ts",
   "main": "dist/t-hooks.js",
   "module": "dist/t-hooks.esm.js",
-  "typings": "dist/index.d.ts",
+  "typings": "dist/t-hooks.d.ts",
   "files": [
     "dist",
     "src"
@@ -14,8 +13,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "microbundle --tsconfig tsconfig.build.json",
-    "start": "microbundle watch",
+    "build": "tsdown",
+    "start": "tsdown --watch",
     "lint": "eslint src --ext js,ts",
     "test": "jest",
     "docs": "typedoc --out ./docs ./src"
@@ -25,6 +24,8 @@
   },
   "author": "Alexander Yushkov",
   "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
     "@babel/preset-typescript": "^7.29.7",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
@@ -40,7 +41,8 @@
     "eslint-plugin-promise": "^7.3.0",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
-    "microbundle": "^0.15.1",
+    "regenerator-runtime": "^0.14.1",
+    "tsdown": "^0.23.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-test-renderer": "^18.3.1",
@@ -65,5 +67,8 @@
     "monad",
     "cancelable"
   ],
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
+  "resolutions": {
+    "@babel/parser": "7.28.5"
+  }
 }
