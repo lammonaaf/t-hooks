@@ -486,3 +486,17 @@ export const useMultiGeneratorCallback = <A extends any[], T, TT extends Task<T>
 ) => {
   return useMultiTaskCallback(Task.generateFunction(taskGeneratorFunction), deps);
 };
+
+export const useFreeTaskCallback = <A extends any[], R>(
+  taskFunction: TaskFunction<A, R>,
+  deps: DependencyList,
+) => {
+  return useCallback(taskFunction, deps);
+};
+
+export const useFreeGeneratorCallback = <A extends any[], T, TT extends Task<T>, R>(
+  taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
+  deps: DependencyList,
+) => {
+  return useCallback(Task.generateFunction(taskGeneratorFunction), deps);
+};
