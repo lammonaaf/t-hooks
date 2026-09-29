@@ -1,6 +1,6 @@
 {
   "name": "t-hooks",
-  "version": "1.2.4",
+  "version": "2.0.0",
   "license": "MIT",
   "main": "dist/t-hooks.js",
   "module": "dist/t-hooks.esm.js",
