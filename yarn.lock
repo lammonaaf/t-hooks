@@ -6011,10 +6011,10 @@ synckit@^0.11.8:
   dependencies:
     "@pkgr/core" "^0.2.9"
 
-t-tasks@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/t-tasks/-/t-tasks-2.0.0.tgz#1db507adc016809dde93a33b3687dee04c88c9ac"
-  integrity sha512-mTHDUZpWGj/K21ZGnDLTv4+gNCqzDRIkHGaVZ4wxWj0d1ab+ypAm8Qx/0zlV77Yk4tQQNUnxg4NhoqQ1uk+FLw==
+t-tasks@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/t-tasks/-/t-tasks-2.1.0.tgz#6ee484f9efb2a9c4df706a1db5b230e0f0b5b8bf"
+  integrity sha512-NSRuooXOwO1OqaMOFsSaILICu+V6w0LWdlIsmFCTgOTHf0/cVqYs8vb6Q6/YJO1pRGapLJSY6YKmYQNCVKGzXA==
 
 table@^6.0.9:
   version "6.8.1"

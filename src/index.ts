@@ -24,45 +24,46 @@ export const useTaskEffect = <T>(
   taskFunction: TaskFunction<[], T>,
   deps: DependencyList,
 ) => {
-  const taskFunctionMemo = useCallback(taskFunction, deps);
+  const [running, setRunning] = useState(false);
+  
+  const activeTaskRef = useRef<Task<T> | null>(null);
 
-  const [task, setTask] = useState<Task<T> | null>(null);
+  const taskFnRef = useRef(taskFunction);
+  taskFnRef.current = taskFunction;
 
   useEffect(() => {
-    const innerTask = taskFunctionMemo();
+    activeTaskRef.current?.cancel();
 
-    innerTask
+    const task = taskFnRef.current();
+    activeTaskRef.current = task;
+    setRunning(true);
+
+    task
       .tap(() => {
-        setTask((current) => (current === innerTask ? null : current));
+        if (activeTaskRef.current === task) setRunning(false);
       })
       .tapRejected(() => {
-        setTask((current) => (current === innerTask ? null : current));
+        if (activeTaskRef.current === task) setRunning(false);
       });
 
-    setTask(innerTask);
-
     return () => {
-      setTimeout(() => innerTask.cancel());
+      task.cancel();
+      if (activeTaskRef.current === task) {
+        activeTaskRef.current = null;
+      }
     };
-  }, [taskFunctionMemo, setTask]);
+  // eslint-disable-next-deps relies on standard hook caller rules
+  }, deps);
 
-  const cancel = useCallback(() => setTask(null), [setTask]);
-
-  useEffect(() => {
-    const innerTask = task;
-
-    if (innerTask) {
-      return () => {
-        setTimeout(() => innerTask.cancel());
-      };
-    } else {
-      return undefined;
+  const cancel = useCallback(() => {
+    if (activeTaskRef.current) {
+      activeTaskRef.current.cancel();
+      activeTaskRef.current = null;
+      setRunning(false);
     }
-  }, [task]);
+  }, []);
 
-  const running = !!task;
-
-  return useMemo(() => [running, cancel] as const, [running, cancel]);
+  return [running, cancel] as const;
 };
 
 /**
@@ -106,54 +107,50 @@ export const useTaskMemoState = <T>(
   deps: DependencyList,
 ) => {
   const [state, setState] = useState<T>(initialValue);
+  const [running, setRunning] = useState(false);
 
-  const taskFunctionMemo = useCallback(taskFunction, deps);
+  const activeTaskRef = useRef<Task<T> | null>(null);
 
-  const [task, setTask] = useState<Task<T> | null>(null);
+  const taskFnRef = useRef(taskFunction);
+  taskFnRef.current = taskFunction;
 
   useEffect(() => {
-    const innerTask = taskFunctionMemo();
+    activeTaskRef.current?.cancel();
 
-    innerTask
+    const task = taskFnRef.current();
+    activeTaskRef.current = task;
+    setRunning(true);
+
+    task
       .tap((result) => {
-        setState(result);
-
-        setTask((current) => (current === innerTask ? null : current));
+        if (activeTaskRef.current === task) {
+          setState(result);
+          setRunning(false);
+        }
       })
       .tapRejected(() => {
-        setTask((current) => (current === innerTask ? null : current));
-      })
-
-    setTask(innerTask);
+        if (activeTaskRef.current === task) {
+          setRunning(false);
+        }
+      });
 
     return () => {
-      setTimeout(() => innerTask.cancel());
+      task.cancel();
+      if (activeTaskRef.current === task) {
+        activeTaskRef.current = null;
+      }
     };
-  }, [taskFunctionMemo, setTask, setState]);
+  }, deps);
 
   const cancel = useCallback(() => {
-    setTask(null);
-  }, [setTask]);
-
-  useEffect(() => {
-    const innerTask = task;
-
-    if (innerTask) {
-      return () => {
-        setTimeout(() => innerTask.cancel());
-      };
-    } else {
-      return undefined;
+    if (activeTaskRef.current) {
+      activeTaskRef.current.cancel();
+      activeTaskRef.current = null;
+      setRunning(false);
     }
-  }, [task]);
+  }, []);
 
-  const running = !!task;
-
-  return useMemo(() => [state, running, cancel] as const, [
-    state,
-    running,
-    cancel,
-  ]);
+  return [state, running, cancel] as const;
 };
 
 /**
@@ -257,45 +254,49 @@ export const useTaskCallbackState = <A extends any[]>(
   taskFunction: TaskFunction<A, void>,
   deps: DependencyList,
 ) => {
-  const [task, setTask] = useState<Task<void> | null>(null);
+  const [running, setRunning] = useState(false);
+  const activeTaskRef = useRef<Task<void> | null>(null);
 
-  const taskFunctionMemo = useCallback(taskFunction, deps);
-
-  const callback = useCallback((...args: A): void => {
-    const innerTask = taskFunctionMemo(...args);
-
-    innerTask
-      .tap(() => {
-        setTask((current) => (current === innerTask ? null : current));
-      })
-      .tapRejected(() => {
-        setTask((current) => (current === innerTask ? null : current));
-      });
-
-    setTask(innerTask);
-  }, [setTask, taskFunctionMemo]);
-
-  const cancel = useCallback(() => setTask(null), [setTask]);
+  const taskFnRef = useRef(taskFunction);
+  taskFnRef.current = taskFunction;
 
   useEffect(() => {
-    const innerTask = task;
+    return () => {
+      activeTaskRef.current?.cancel();
+    };
+  }, []);
 
-    if (innerTask) {
-      return () => {
-        setTimeout(() => innerTask.cancel());
-      };
-    } else {
-      return undefined;
+  const cancel = useCallback(() => {
+    if (activeTaskRef.current) {
+      activeTaskRef.current.cancel();
+      activeTaskRef.current = null;
+      setRunning(false);
     }
-  }, [task]);
+  }, []);
 
-  const running = !!task;
+  const callback = useCallback((...args: A): void => {
+    activeTaskRef.current?.cancel();
 
-  return useMemo(() => [callback, running, cancel] as const, [
-    callback,
-    running,
-    cancel,
-  ]);
+    const task = taskFnRef.current(...args);
+    activeTaskRef.current = task;
+    setRunning(true);
+
+    task
+      .tap(() => {
+        if (activeTaskRef.current === task) {
+          activeTaskRef.current = null;
+          setRunning(false);
+        }
+      })
+      .tapRejected(() => {
+        if (activeTaskRef.current === task) {
+          activeTaskRef.current = null;
+          setRunning(false);
+        }
+      });
+  }, deps);
+
+  return [callback, running, cancel] as const;
 };
 
 /** @deprecated */

@@ -347,10 +347,11 @@ describe('useTaskEffect', () => {
         Task.resolved(undefined)
           .tap(() => setState('start'))
           .chain(() => Task.timeout(1000))
-          .tap(() => {
+          .map((r) => {
             if (key === 'throw') {
               throw new Error('Thrown');
             }
+            return r;
           })
           .tap(() => setState('end'))
       ) : Task.resolved(undefined)),
@@ -2061,10 +2062,11 @@ describe('useTaskCallbackState', () => {
         Task.resolved(undefined)
           .tap(() => setState('start'))
           .chain(() => Task.timeout(1000))
-          .tap(() => {
+          .map((r) => {
             if (prefix === 'throw') {
               throw 'some-error';
             }
+            return r;
           })
           .tap(() => setState('end'))
           .tap(() => success?.(prefix + data))
@@ -2413,10 +2415,11 @@ describe('useTaskCallback', () => {
         Task.resolved(undefined)
           .tap(() => setState('start'))
           .chain(() => Task.timeout(1000))
-          .tap(() => {
+          .map((r) => {
             if (prefix === 'throw') {
               throw 'some-error';
             }
+            return r;
           })
           .tap(() => setState('end'))
           .tap(() => success?.(prefix + data))
@@ -2946,10 +2949,11 @@ describe('useTaskMemoState', () => {
       0,
       () => Task.resolved(undefined)
         .chain(() => Task.timeout(1000))
-        .tap(() => {
+        .map((r) => {
           if (data === 'throw') {
             throw 'some-error';
           }
+          return r;
         })
         .map(() => data.length),
       [data],
