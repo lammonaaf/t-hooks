@@ -18,10 +18,15 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: 18.x
+          node-version: 22.x
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        env:
+          CI: true
+
+      - name: Build
+        run: yarn build
         env:
           CI: true
 
