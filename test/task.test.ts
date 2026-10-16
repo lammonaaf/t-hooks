@@ -62,7 +62,7 @@ describe('useGeneratorEffect', () => {
     return { state, running, cancel };
   };
 
-  it('scenario1', async () => {
+  it('completes a successful task', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'true' as string | null,
       reactStrictMode,
@@ -79,7 +79,7 @@ describe('useGeneratorEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario2', async () => {
+  it('stops running when the task throws', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'throw' as string | null,
       reactStrictMode,
@@ -96,7 +96,7 @@ describe('useGeneratorEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario3', async () => {
+  it('runs again when the dependency becomes active', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -127,7 +127,7 @@ describe('useGeneratorEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario4', async () => {
+  it('cancels when the dependency is cleared', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -173,7 +173,7 @@ describe('useGeneratorEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario5', async () => {
+  it('restarts when the dependency changes', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -232,7 +232,7 @@ describe('useGeneratorEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario6', async () => {
+  it('does not finish after unmount', async () => {
     const { result, rerender, unmount } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -277,7 +277,7 @@ describe('useGeneratorEffect', () => {
     expect(result.current.running).toBeTruthy();
   });
 
-  it('scenario7', async () => {
+  it('cancel stops the task before it finishes', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -361,7 +361,7 @@ describe('useTaskEffect', () => {
     return { state, running, cancel };
   };
 
-  it('scenario1', async () => {
+  it('completes a successful task', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'true' as string | null,
       reactStrictMode,
@@ -378,7 +378,7 @@ describe('useTaskEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario2', async () => {
+  it('stops running when the task throws', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'throw' as string | null,
       reactStrictMode,
@@ -395,7 +395,7 @@ describe('useTaskEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario3', async () => {
+  it('runs again when the dependency becomes active', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -426,7 +426,7 @@ describe('useTaskEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario4', async () => {
+  it('cancels when the dependency is cleared', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -472,7 +472,7 @@ describe('useTaskEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario5', async () => {
+  it('restarts when the dependency changes', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -531,7 +531,7 @@ describe('useTaskEffect', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario6', async () => {
+  it('does not finish after unmount', async () => {
     const { result, rerender, unmount } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -576,7 +576,7 @@ describe('useTaskEffect', () => {
     expect(result.current.running).toBeTruthy();
   });
 
-  it('scenario7', async () => {
+  it('cancel stops the task before it finishes', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: null as string | null,
       reactStrictMode,
@@ -672,7 +672,7 @@ describe('useGeneratorCallbackState', () => {
     return { state, callback, running, cancel };
   };
 
-  it('scenario1', async () => {
+  it('resolves with the callback argument and data', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -709,7 +709,7 @@ describe('useGeneratorCallbackState', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario2', async () => {
+  it('reports an error when the task throws', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -746,7 +746,7 @@ describe('useGeneratorCallbackState', () => {
     expect(error).toHaveBeenCalledWith('some-error');
   });
 
-  it('scenario3', async () => {
+  it('does not resolve after unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -786,7 +786,7 @@ describe('useGeneratorCallbackState', () => {
     expect(done).toHaveBeenCalledTimes(1);
   });
 
-  it('scenario4', async () => {
+  it('cancels the previous call when invoked again', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -831,7 +831,7 @@ describe('useGeneratorCallbackState', () => {
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
-  it('scenario5', async () => {
+  it('keeps the in-flight call when dependencies change', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -879,7 +879,7 @@ describe('useGeneratorCallbackState', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario6', async () => {
+  it('uses updated dependencies on the next call', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -939,7 +939,7 @@ describe('useGeneratorCallbackState', () => {
     expect(success).toHaveBeenCalledWith('goodbye me');
   });
 
-  it('scenario7', async () => {
+  it('cancel stops the task before it finishes', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1030,7 +1030,7 @@ describe('useGeneratorCallback', () => {
     return { state, callback };
   };
 
-  it('scenario1', async () => {
+  it('resolves with the callback argument and data', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1064,7 +1064,7 @@ describe('useGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario2', async () => {
+  it('reports an error when the task throws', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1098,7 +1098,7 @@ describe('useGeneratorCallback', () => {
     expect(error).toHaveBeenCalledWith('some-error');
   });
 
-  it('scenario3', async () => {
+  it('does not resolve after unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1135,7 +1135,7 @@ describe('useGeneratorCallback', () => {
     expect(done).toHaveBeenCalledTimes(1);
   });
 
-  it('scenario4', async () => {
+  it('cancels the previous call when invoked again', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1177,7 +1177,7 @@ describe('useGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
-  it('scenario5', async () => {
+  it('keeps the in-flight call when dependencies change', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1221,7 +1221,7 @@ describe('useGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario6', async () => {
+  it('uses updated dependencies on the next call', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1328,7 +1328,7 @@ describe('useMultiGeneratorCallback', () => {
     return { state, callback };
   };
 
-  it('scenario1', async () => {
+  it('resolves a single call', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1362,7 +1362,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario2', async () => {
+  it('reports an error when the task throws', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1396,7 +1396,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(error).toHaveBeenCalledWith('some-error');
   });
 
-  it('scenario3', async () => {
+  it('does not resolve after unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1433,7 +1433,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(done).toHaveBeenCalledTimes(1);
   });
 
-  it('scenario4', async () => {
+  it('runs overlapping calls concurrently', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1476,7 +1476,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
-  it('scenario5', async () => {
+  it('keeps the in-flight call when dependencies change', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1520,7 +1520,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario6', async () => {
+  it('runs the previous and next call with their own dependencies', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1577,7 +1577,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('goodbye me');
   });
 
-  it('scenario7', async () => {
+  it('cancels every in-flight call on unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1628,7 +1628,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(done).toHaveBeenCalledTimes(2);
   });
 
-  it('scenario8', async () => {
+  it('cancels simultaneous calls on unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1673,7 +1673,7 @@ describe('useMultiGeneratorCallback', () => {
     expect(done).toHaveBeenCalledTimes(3);
   });
 
-  it('scenario9', async () => {
+  it('cancels only the calls still running on unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1783,7 +1783,7 @@ describe('useFreeGeneratorCallback', () => {
     return { state, callback };
   };
 
-  it('scenario1', async () => {
+  it('resolves with the callback argument and data', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1817,7 +1817,7 @@ describe('useFreeGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario2', async () => {
+  it('reports an error when the task throws', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1851,7 +1851,7 @@ describe('useFreeGeneratorCallback', () => {
     expect(error).toHaveBeenCalledWith('some-error');
   });
 
-  it('scenario3', async () => {
+  it('still resolves after unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1888,7 +1888,7 @@ describe('useFreeGeneratorCallback', () => {
     expect(done).toHaveBeenCalledTimes(1);
   });
 
-  it('scenario4', async () => {
+  it('runs overlapping calls without cancelling', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1931,7 +1931,7 @@ describe('useFreeGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
-  it('scenario5', async () => {
+  it('keeps the in-flight call when dependencies change', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -1975,7 +1975,7 @@ describe('useFreeGeneratorCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario6', async () => {
+  it('runs the previous and next call with their own dependencies', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2078,7 +2078,7 @@ describe('useTaskCallbackState', () => {
     return { state, callback, running, cancel };
   };
 
-  it('scenario1', async () => {
+  it('resolves with the callback argument and data', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2115,7 +2115,7 @@ describe('useTaskCallbackState', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario2', async () => {
+  it('reports an error when the task throws', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2152,7 +2152,7 @@ describe('useTaskCallbackState', () => {
     expect(error).toHaveBeenCalledWith('some-error');
   });
 
-  it('scenario3', async () => {
+  it('does not resolve after unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2192,7 +2192,7 @@ describe('useTaskCallbackState', () => {
     expect(done).toHaveBeenCalledTimes(0);
   });
 
-  it('scenario4', async () => {
+  it('cancels the previous call when invoked again', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2237,7 +2237,7 @@ describe('useTaskCallbackState', () => {
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
-  it('scenario5', async () => {
+  it('keeps the in-flight call when dependencies change', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2285,7 +2285,7 @@ describe('useTaskCallbackState', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario6', async () => {
+  it('uses updated dependencies on the next call', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2345,7 +2345,7 @@ describe('useTaskCallbackState', () => {
     expect(success).toHaveBeenCalledWith('goodbye me');
   });
 
-  it('scenario7', async () => {
+  it('cancel stops the task before it finishes', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2431,7 +2431,7 @@ describe('useTaskCallback', () => {
     return { state, callback };
   };
 
-  it('scenario1', async () => {
+  it('resolves with the callback argument and data', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2465,7 +2465,7 @@ describe('useTaskCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario2', async () => {
+  it('reports an error when the task throws', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2499,7 +2499,7 @@ describe('useTaskCallback', () => {
     expect(error).toHaveBeenCalledWith('some-error');
   });
 
-  it('scenario3', async () => {
+  it('does not resolve after unmount', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2536,7 +2536,7 @@ describe('useTaskCallback', () => {
     expect(done).toHaveBeenCalledTimes(0);
   });
 
-  it('scenario4', async () => {
+  it('cancels the previous call when invoked again', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2578,7 +2578,7 @@ describe('useTaskCallback', () => {
     expect(success).toHaveBeenCalledWith('goodbye world');
   });
 
-  it('scenario5', async () => {
+  it('keeps the in-flight call when dependencies change', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2622,7 +2622,7 @@ describe('useTaskCallback', () => {
     expect(success).toHaveBeenCalledWith('hello world');
   });
 
-  it('scenario6', async () => {
+  it('uses updated dependencies on the next call', async () => {
     const success = jest.fn();
     const error = jest.fn();
     const done = jest.fn();
@@ -2713,7 +2713,7 @@ describe('useGeneratorMemoState', () => {
     return { length, running, cancel };
   };
 
-  it('scenario1', async () => {
+  it('resolves to the derived value', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -2737,7 +2737,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario2', async () => {
+  it('keeps the initial value when the task throws', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'throw',
       reactStrictMode,
@@ -2761,7 +2761,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario3', async () => {
+  it('updates the value when dependencies change after completion', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -2806,7 +2806,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario4', async () => {
+  it('restarts when dependencies change during execution', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -2851,7 +2851,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario5', async () => {
+  it('does not update after unmount', async () => {
     const { result, unmount } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -2889,7 +2889,7 @@ describe('useGeneratorMemoState', () => {
     expect(result.current.running).toBeTruthy();
   });
 
-  it('scenario6', async () => {
+  it('cancel keeps the initial value', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -2962,7 +2962,7 @@ describe('useTaskMemoState', () => {
     return { length, running, cancel };
   };
 
-  it('scenario1', async () => {
+  it('resolves to the derived value', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -2986,7 +2986,7 @@ describe('useTaskMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario2', async () => {
+  it('keeps the initial value when the task throws', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'throw',
       reactStrictMode,
@@ -3010,7 +3010,7 @@ describe('useTaskMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario3', async () => {
+  it('updates the value when dependencies change after completion', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -3055,7 +3055,7 @@ describe('useTaskMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario4', async () => {
+  it('restarts when dependencies change during execution', async () => {
     const { result, rerender } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -3100,7 +3100,7 @@ describe('useTaskMemoState', () => {
     expect(result.current.running).toBeFalsy();
   });
 
-  it('scenario5', async () => {
+  it('does not update after unmount', async () => {
     const { result, unmount } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -3138,7 +3138,7 @@ describe('useTaskMemoState', () => {
     expect(result.current.running).toBeTruthy();
   });
 
-  it('scenario6', async () => {
+  it('cancel keeps the initial value', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -3207,7 +3207,7 @@ describe('useGeneratorMemo', () => {
     return { length };
   };
 
-  it('scenario1', async () => {
+  it('resolves to the derived value', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -3255,7 +3255,7 @@ describe('useTaskMemo', () => {
     return { length };
   };
 
-  it('scenario1', async () => {
+  it('resolves to the derived value', async () => {
     const { result } = renderHook(useTestCase, {
       initialProps: 'hello',
       reactStrictMode,
@@ -3277,7 +3277,7 @@ describe('useTaskMemo', () => {
   });
 });
 
-describe('useGeneratorMemo', () => {
+describe('chained useGeneratorMemo', () => {
   beforeEach(() => jest.useFakeTimers({ legacyFakeTimers: true }));
   afterEach(() => jest.useRealTimers());
 
@@ -3320,7 +3320,7 @@ describe('useGeneratorMemo', () => {
     return { length };
   };
 
-  it('scenario1', async () => {
+  it('waits for the upstream memo before resolving', async () => {
     const { result } = renderHook(useTestCase, {
       reactStrictMode,
     });

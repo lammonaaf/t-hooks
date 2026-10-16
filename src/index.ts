@@ -13,12 +13,12 @@ import {
  *
  * Task equivalent to useEffect hook allowing to perform asynchronous operations as effects
  *
- * Task execution is automatically interrupted in case of effect re-render or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of effect re-render or unmounting. This way, only one task is running at any given time
  *
  * @template T resulting task resolve type
- * @param taskFunction task taskFunction to be invoked as effect
+ * @param taskFunction task function to be invoked as effect
  * @param deps dependency list
- * @returns current execution status (running or not) and cancellation function
+ * @returns current execution status and cancellation function, as [running, cancel]
  */
 export const useTaskEffect = <T>(
   taskFunction: TaskFunction<[], T>,
@@ -71,13 +71,14 @@ export const useTaskEffect = <T>(
  *
  * Generator version of task-effect converting generator to compound task first
  *
- * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at any given time
  *
+ * @template T yielded underlying type
  * @template TT yielded task type
  * @template R resulting task resolve type
  * @param taskGeneratorFunction task generator function
  * @param deps dependency list
- * @returns current execution status (running or not) and cancellation function
+ * @returns current execution status and cancellation function, as [running, cancel]
  *
  * @see useTaskEffect
  */
@@ -91,15 +92,15 @@ export const useGeneratorEffect = <T, TT extends Task<T>, R>(
 /**
  * Task-based asynchronous memo hook
  *
- * Task equivalent to useMemo hook allowing to perform asynchronous memorized transformations
+ * Task-based hook for asynchronous memoized transformations
  *
- * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at any given time
  *
  * @template T resulting task resolve type
  * @param initialValue initial value available immediately
- * @param taskFunction task taskFunction to be invoked to get transformed value
- * @param deps depandency list
- * @returns memorized value, current execution status (running or not) and cancellation function
+ * @param taskFunction task function to be invoked to get the transformed value
+ * @param deps dependency list
+ * @returns memoized value, current execution status, and cancellation function, as [state, running, cancel]
  */
 export const useTaskMemoState = <T>(
   initialValue: T,
@@ -154,17 +155,17 @@ export const useTaskMemoState = <T>(
 };
 
 /**
- * Task-based asynchronous memo hook (convinience binding)
+ * Task-based asynchronous memo hook (convenience binding)
  *
- * Task equivalent to useMemo hook allowing to perform asynchronous memorized transformations
+ * Task-based hook for asynchronous memoized transformations
  *
- * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at any given time
  *
  * @template T resulting task resolve type
  * @param initialValue initial value available immediately
- * @param taskFunction task taskFunction to be invoked to get transformed value
- * @param deps depandency list
- * @returns memorized value
+ * @param taskFunction task function to be invoked to get the transformed value
+ * @param deps dependency list
+ * @returns memoized value
  *
  * @see useTaskMemoState
  */
@@ -183,14 +184,15 @@ export const useTaskMemo = <T>(
  *
  * Generator version of task-memo converting generator to compound task first
  *
- * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at any given time
  *
+ * @template T yielded underlying type
  * @template TT yielded task type
  * @template R resulting task resolve type
- * @param initialValue initial value available immediately
+ * @param initialValue initial value of type R, available immediately
  * @param taskGeneratorFunction task generator function
  * @param deps dependency list
- * @returns memorized value, current execution status (running or not) and cancellation function
+ * @returns memoized value, current execution status, and cancellation function, as [state, running, cancel]
  *
  * @see useTaskMemoState
  */
@@ -207,18 +209,19 @@ export const useGeneratorMemoState = <T, TT extends Task<T>, R>(
 };
 
 /**
- * Generator-based asynchronous memo hook (convinience binding)
+ * Generator-based asynchronous memo hook (convenience binding)
  *
  * Generator version of task-memo converting generator to compound task first
  *
- * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at any given time
  *
+ * @template T yielded underlying type
  * @template TT yielded task type
  * @template R resulting task resolve type
- * @param initialValue initial value available immediately
+ * @param initialValue initial value of type R, available immediately
  * @param taskGeneratorFunction task generator function
  * @param deps dependency list
- * @returns memorized value
+ * @returns memoized value
  *
  * @see useGeneratorMemoState
  */
@@ -241,12 +244,12 @@ export const useGeneratorMemo = <T, TT extends Task<T>, R>(
  *
  * Task equivalent to useCallback hook allowing to perform asynchronous callbacks
  *
- * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at any given time
  *
- * @template A callback arguments type
- * @param taskFunction task taskFunction to be invoked as callback
+ * @template A callback argument types
+ * @param taskFunction task function to be invoked as callback; the task resolves to void
  * @param deps dependency list
- * @returns callback to be invoked, current execution status (running or not) and cancellation function
+ * @returns callback, current execution status, and cancellation function, as [callback, running, cancel]
  *
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
@@ -299,7 +302,19 @@ export const useTaskCallbackState = <A extends any[]>(
   return [callback, running, cancel] as const;
 };
 
-/** @deprecated */
+/**
+ * @deprecated Use {@link useTaskCallbackState} when the callback task resolves to void. This hook remains for callbacks whose task resolves to a result.
+ *
+ * Task-based asynchronous callback hook that returns the started task
+ *
+ * Each call starts a task and returns it. A later call or unmount cancels the previous task asynchronously, from an effect cleanup via setTimeout. cancel() clears the running flag immediately and schedules that same cancellation.
+ *
+ * @template A callback argument types
+ * @template R resulting task resolve type
+ * @param taskFunction task function to be invoked as callback
+ * @param deps dependency list; the task function is memoized with these dependencies
+ * @returns callback returning the started task, current execution status, and cancellation function, as [callback, running, cancel]
+ */
 export const useCompatTaskCallbackState = <A extends any[], R>(
   taskFunction: TaskFunction<A, R>,
   deps: DependencyList,
@@ -348,14 +363,14 @@ export const useCompatTaskCallbackState = <A extends any[], R>(
 };
 
 /**
- * Task-based asynchronous callback hook (convinience binding)
+ * Task-based asynchronous callback hook (convenience binding)
  *
  * Task equivalent to useCallback hook allowing to perform asynchronous callbacks
  *
- * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at any given time
  *
- * @template A callback arguments type
- * @param taskFunction task taskFunction to be invoked as callback
+ * @template A callback argument types
+ * @param taskFunction task function to be invoked as callback; the task resolves to void
  * @param deps dependency list
  * @returns callback to be invoked
  *
@@ -372,7 +387,21 @@ export const useTaskCallback = <A extends any[]>(
   return callback;
 };
 
-/** @deprecated */
+/**
+ * @deprecated Use {@link useTaskCallback} when the callback task resolves to void. This hook remains for callbacks whose task resolves to a result.
+ *
+ * Convenience binding of {@link useCompatTaskCallbackState}
+ *
+ * The returned callback yields the started task. Running status and cancel are omitted; cancel that task from the callback result.
+ *
+ * @template A callback argument types
+ * @template R resulting task resolve type
+ * @param taskFunction task function to be invoked as callback
+ * @param deps dependency list; the task function is memoized with these dependencies
+ * @returns callback returning the started task
+ *
+ * @see useCompatTaskCallbackState
+ */
 export const useCompatTaskCallback = <A extends any[], R>(
   taskFunction: TaskFunction<A, R>,
   deps: DependencyList,
@@ -387,13 +416,14 @@ export const useCompatTaskCallback = <A extends any[], R>(
  *
  * Generator version of task-callback converting generator to compound task first
  *
- * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at any given time
  *
- * @template A callback arguments type
+ * @template A callback argument types
+ * @template T yielded underlying type
  * @template TT yielded task type
- * @param taskGeneratorFunction task generator function
+ * @param taskGeneratorFunction task generator function; the generator returns void
  * @param deps dependency list
- * @returns callback to be invoked, current execution status (running or not) and cancellation function
+ * @returns callback, current execution status, and cancellation function, as [callback, running, cancel]
  *
  * @see useTaskCallbackState
  *
@@ -406,7 +436,23 @@ export const useGeneratorCallbackState = <A extends any[], T, TT extends Task<T>
   return useTaskCallbackState(Task.generateFunction(taskGeneratorFunction), deps);
 };
 
-/** @deprecated */
+/**
+ * @deprecated Use {@link useGeneratorCallbackState} when the generator returns void. This hook remains for generators that return a result.
+ *
+ * Generator-based asynchronous callback hook that returns the started task
+ *
+ * Generator version of {@link useCompatTaskCallbackState}, converting the generator to a compound task first
+ *
+ * @template A callback argument types
+ * @template T yielded underlying type
+ * @template TT yielded task type
+ * @template R resulting task resolve type
+ * @param taskGeneratorFunction task generator function
+ * @param deps dependency list
+ * @returns callback returning the started task, current execution status, and cancellation function, as [callback, running, cancel]
+ *
+ * @see useCompatTaskCallbackState
+ */
 export const useCompatGeneratorCallbackState = <A extends any[], T, TT extends Task<T>, R>(
   taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
   deps: DependencyList,
@@ -415,19 +461,20 @@ export const useCompatGeneratorCallbackState = <A extends any[], T, TT extends T
 };
 
 /**
- * Generator-based asynchronous callback hook (convinience binding)
+ * Generator-based asynchronous callback hook (convenience binding)
  *
  * Generator version of task-callback converting generator to compound task first
  *
- * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at the given time
+ * Task execution is automatically interrupted in case of additional calls or unmounting. This way, only one task is running at any given time
  *
- * @template A callback arguments type
+ * @template A callback argument types
+ * @template T yielded underlying type
  * @template TT yielded task type
- * @param taskGeneratorFunction task generator function
+ * @param taskGeneratorFunction task generator function; the generator returns void
  * @param deps dependency list
  * @returns callback to be invoked
  *
- * @see useTaskCallbackState
+ * @see useGeneratorCallbackState
  *
  * @note Task is not cancelled on hook re-render, but is cancelled on the next call instead
  */
@@ -440,7 +487,23 @@ export const useGeneratorCallback = <A extends any[], T, TT extends Task<T>>(
   return callback;
 };
 
-/** @deprecated */
+/**
+ * @deprecated Use {@link useGeneratorCallback} when the generator returns void. This hook remains for generators that return a result.
+ *
+ * Convenience binding of {@link useCompatGeneratorCallbackState}
+ *
+ * The returned callback yields the started task. Running status and cancel are omitted; cancel that task from the callback result.
+ *
+ * @template A callback argument types
+ * @template T yielded underlying type
+ * @template TT yielded task type
+ * @template R resulting task resolve type
+ * @param taskGeneratorFunction task generator function
+ * @param deps dependency list
+ * @returns callback returning the started task
+ *
+ * @see useCompatGeneratorCallbackState
+ */
 export const useCompatGeneratorCallback = <A extends any[], T, TT extends Task<T>, R>(
   taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
   deps: DependencyList,
@@ -450,6 +513,16 @@ export const useCompatGeneratorCallback = <A extends any[], T, TT extends Task<T
   return callback;
 };
 
+/**
+ * Task-based callback hook that allows concurrent tasks
+ *
+ * Each call starts a new task and leaves tasks already running in place. Every in-flight task is cancelled on unmount. Dependency changes do not cancel work already started.
+ *
+ * @template A callback argument types
+ * @param taskFunction task function to be invoked as callback; the task resolves to void
+ * @param deps dependency list; the task function is memoized with these dependencies
+ * @returns callback to be invoked
+ */
 export const useMultiTaskCallback = <A extends any[]>(
   taskFunction: TaskFunction<A, void>,
   deps: DependencyList,
@@ -481,6 +554,22 @@ export const useMultiTaskCallback = <A extends any[]>(
   return callback;
 };
 
+/**
+ * Generator-based callback hook that allows concurrent tasks
+ *
+ * Generator version of {@link useMultiTaskCallback}, converting the generator to a compound task first
+ *
+ * Each call starts a new task and leaves tasks already running in place. Every in-flight task is cancelled on unmount. Dependency changes do not cancel work already started.
+ *
+ * @template A callback argument types
+ * @template T yielded underlying type
+ * @template TT yielded task type
+ * @param taskGeneratorFunction task generator function; the generator returns void
+ * @param deps dependency list
+ * @returns callback to be invoked
+ *
+ * @see useMultiTaskCallback
+ */
 export const useMultiGeneratorCallback = <A extends any[], T, TT extends Task<T>>(
   taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, void>,
   deps: DependencyList,
@@ -488,6 +577,17 @@ export const useMultiGeneratorCallback = <A extends any[], T, TT extends Task<T>
   return useMultiTaskCallback(Task.generateFunction(taskGeneratorFunction), deps);
 };
 
+/**
+ * Unmanaged task callback hook
+ *
+ * Memoizes a task function with useCallback. The hook does not cancel the returned task on unmount, dependency change, or a later call. The caller owns that task.
+ *
+ * @template A callback argument types
+ * @template R resulting task resolve type
+ * @param taskFunction task function to memoize as a callback
+ * @param deps dependency list
+ * @returns memoized task function
+ */
 export const useFreeTaskCallback = <A extends any[], R>(
   taskFunction: TaskFunction<A, R>,
   deps: DependencyList,
@@ -495,6 +595,21 @@ export const useFreeTaskCallback = <A extends any[], R>(
   return useCallback(taskFunction, deps);
 };
 
+/**
+ * Unmanaged generator callback hook
+ *
+ * Memoizes a generator function as a task function. The hook does not cancel the returned task on unmount, dependency change, or a later call. The caller owns that task.
+ *
+ * @template A callback argument types
+ * @template T yielded underlying type
+ * @template TT yielded task type
+ * @template R resulting task resolve type
+ * @param taskGeneratorFunction task generator function
+ * @param deps dependency list
+ * @returns memoized task function
+ *
+ * @see useFreeTaskCallback
+ */
 export const useFreeGeneratorCallback = <A extends any[], T, TT extends Task<T>, R>(
   taskGeneratorFunction: TaskGeneratorFunction<A, T, TT, R>,
   deps: DependencyList,
