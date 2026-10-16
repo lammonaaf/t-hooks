@@ -30,7 +30,7 @@
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@types/react": "^18.3.26",
     "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
@@ -42,7 +42,7 @@
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "regenerator-runtime": "^0.14.1",
-    "tsdown": "^0.23.0",
+    "tsdown": "^0.23.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-test-renderer": "^18.3.1",
@@ -51,7 +51,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "t-tasks": "^2.1.0"
+    "t-tasks": "^2.1.1"
   },
   "homepage": "https://lammonaaf.github.io/t-hooks",
   "repository": {
