@@ -18,21 +18,40 @@
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
-<li><span id="usecompatgeneratorcallbackstatea"><span class="tsd-kind-type-parameter">A</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li>
-<li><span id="usecompatgeneratorcallbackstatet"><span class="tsd-kind-type-parameter">T</span></span></li>
-<li><span id="usecompatgeneratorcallbackstatett"><span class="tsd-kind-type-parameter">TT</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">Task</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatet">T</a><span class="tsd-signature-symbol">&gt;</span></span></li>
-<li><span id="usecompatgeneratorcallbackstater"><span class="tsd-kind-type-parameter">R</span></span></li></ul></section>
+<li><span id="usecompatgeneratorcallbackstatea"><span class="tsd-kind-type-parameter">A</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>callback argument types</p>
+</div></li>
+<li><span id="usecompatgeneratorcallbackstatet"><span class="tsd-kind-type-parameter">T</span></span>
+<div class="tsd-comment tsd-typography"><p>yielded underlying type</p>
+</div></li>
+<li><span id="usecompatgeneratorcallbackstatett"><span class="tsd-kind-type-parameter">TT</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">Task</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatet">T</a><span class="tsd-signature-symbol">&gt;</span></span>
+<div class="tsd-comment tsd-typography"><p>yielded task type</p>
+</div></li>
+<li><span id="usecompatgeneratorcallbackstater"><span class="tsd-kind-type-parameter">R</span></span>
+<div class="tsd-comment tsd-typography"><p>resulting task resolve type</p>
+</div></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">taskGeneratorFunction</span>: <span class="tsd-signature-type">TaskGeneratorFunction</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatea">A</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatet">T</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatett">TT</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span></span></li>
-<li><span><span class="tsd-kind-parameter">deps</span>: <span class="tsd-signature-type">DependencyList</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatea">A</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">Task</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">]</span></h4>
+<li><span><span class="tsd-kind-parameter">taskGeneratorFunction</span>: <span class="tsd-signature-type">TaskGeneratorFunction</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatea">A</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatet">T</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatett">TT</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span></span>
+<div class="tsd-comment tsd-typography"><p>task generator function</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">deps</span>: <span class="tsd-signature-type">DependencyList</span></span>
+<div class="tsd-comment tsd-typography"><p>dependency list</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstatea">A</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">Task</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompatgeneratorcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">]</span></h4><p>callback returning the started task, current execution status, and cancellation function, as [callback, running, cancel]</p>
+
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-deprecated">
-<h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4></div></div><aside class="tsd-sources">
+<h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Use <a href="useGeneratorCallbackState.html" class="tsd-kind-function">useGeneratorCallbackState</a> when the generator returns void. This hook remains for generators that return a result.</p>
+<p>Generator-based asynchronous callback hook that returns the started task</p>
+<p>Generator version of <a href="useCompatTaskCallbackState.html" class="tsd-kind-function">useCompatTaskCallbackState</a>, converting the generator to a compound task first</p>
+</div>
+<div class="tsd-tag-see">
+<h4 class="tsd-anchor-link" id="see">See<a href="#see" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>useCompatTaskCallbackState</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lammonaaf/t-hooks/blob/41e5f220b3a11758c00cc98d470ed8666a25a921/src/index.ts#L410">index.ts:410</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/lammonaaf/t-hooks/blob/1ae5a011a6546bb44a03f0faf51fe229baf6e534/src/index.ts#L456">index.ts:456</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

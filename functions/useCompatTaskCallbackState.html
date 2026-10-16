@@ -18,19 +18,31 @@
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameter-list">
-<li><span id="usecompattaskcallbackstatea"><span class="tsd-kind-type-parameter">A</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li>
-<li><span id="usecompattaskcallbackstater"><span class="tsd-kind-type-parameter">R</span></span></li></ul></section>
+<li><span id="usecompattaskcallbackstatea"><span class="tsd-kind-type-parameter">A</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span>
+<div class="tsd-comment tsd-typography"><p>callback argument types</p>
+</div></li>
+<li><span id="usecompattaskcallbackstater"><span class="tsd-kind-type-parameter">R</span></span>
+<div class="tsd-comment tsd-typography"><p>resulting task resolve type</p>
+</div></li></ul></section>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">taskFunction</span>: <span class="tsd-signature-type">TaskFunction</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstatea">A</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span></span></li>
-<li><span><span class="tsd-kind-parameter">deps</span>: <span class="tsd-signature-type">DependencyList</span></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstatea">A</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">Task</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">]</span></h4>
+<li><span><span class="tsd-kind-parameter">taskFunction</span>: <span class="tsd-signature-type">TaskFunction</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstatea">A</a><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span></span>
+<div class="tsd-comment tsd-typography"><p>task function to be invoked as callback</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">deps</span>: <span class="tsd-signature-type">DependencyList</span></span>
+<div class="tsd-comment tsd-typography"><p>dependency list; the task function is memoized with these dependencies</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">args</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstatea">A</a><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">Task</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usecompattaskcallbackstater">R</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">]</span></h4><p>callback returning the started task, current execution status, and cancellation function, as [callback, running, cancel]</p>
+
 <div class="tsd-comment tsd-typography">
 <div class="tsd-tag-deprecated">
-<h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4></div></div><aside class="tsd-sources">
+<h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>Use <a href="useTaskCallbackState.html" class="tsd-kind-function">useTaskCallbackState</a> when the callback task resolves to void. This hook remains for callbacks whose task resolves to a result.</p>
+<p>Task-based asynchronous callback hook that returns the started task</p>
+<p>Each call starts a task and returns it. A later call or unmount cancels the previous task asynchronously, from an effect cleanup via setTimeout. cancel() clears the running flag immediately and schedules that same cancellation.</p>
+</div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lammonaaf/t-hooks/blob/41e5f220b3a11758c00cc98d470ed8666a25a921/src/index.ts#L303">index.ts:303</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/lammonaaf/t-hooks/blob/1ae5a011a6546bb44a03f0faf51fe229baf6e534/src/index.ts#L318">index.ts:318</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

@@ -16,8 +16,8 @@
 <div class="tsd-signature tsd-anchor-link" id="usetaskmemostate"><span class="tsd-kind-call-signature">useTaskMemoState</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usetaskmemostatet">T</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">initialValue</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usetaskmemostatet">T</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">taskFunction</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TaskFunction</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usetaskmemostatet">T</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">deps</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DependencyList</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usetaskmemostatet">T</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">]</span><a href="#usetaskmemostate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Task-based asynchronous memo hook</p>
-<p>Task equivalent to useMemo hook allowing to perform asynchronous memorized transformations</p>
-<p>Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at the given time</p>
+<p>Task-based hook for asynchronous memoized transformations</p>
+<p>Task execution is automatically interrupted in case of hook re-render or unmounting. This way, only one task is running at any given time</p>
 </div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
@@ -32,15 +32,15 @@
 <div class="tsd-comment tsd-typography"><p>initial value available immediately</p>
 </div></li>
 <li><span><span class="tsd-kind-parameter">taskFunction</span>: <span class="tsd-signature-type">TaskFunction</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#usetaskmemostatet">T</a><span class="tsd-signature-symbol">&gt;</span></span>
-<div class="tsd-comment tsd-typography"><p>task taskFunction to be invoked to get transformed value</p>
+<div class="tsd-comment tsd-typography"><p>task function to be invoked to get the transformed value</p>
 </div></li>
 <li><span><span class="tsd-kind-parameter">deps</span>: <span class="tsd-signature-type">DependencyList</span></span>
-<div class="tsd-comment tsd-typography"><p>depandency list</p>
+<div class="tsd-comment tsd-typography"><p>dependency list</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usetaskmemostatet">T</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">]</span></h4><p>memorized value, current execution status (running or not) and cancellation function</p>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-keyword">readonly</span> <span class="tsd-signature-symbol">[</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#usetaskmemostatet">T</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">]</span></h4><p>memoized value, current execution status, and cancellation function, as [state, running, cancel]</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/lammonaaf/t-hooks/blob/41e5f220b3a11758c00cc98d470ed8666a25a921/src/index.ts#L104">index.ts:104</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/lammonaaf/t-hooks/blob/1ae5a011a6546bb44a03f0faf51fe229baf6e534/src/index.ts#L105">index.ts:105</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
