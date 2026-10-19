@@ -47,7 +47,7 @@
     "react-dom": "^18.3.1",
     "react-test-renderer": "^18.3.1",
     "typedoc": "^0.28.20",
-    "typedoc-plugin-markdown": "^4.13.1",
+    "typedoc-plugin-markdown": "^4.14.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
