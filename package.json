@@ -24,7 +24,7 @@
   },
   "author": "Alexander Yushkov",
   "devDependencies": {
-    "@babel/core": "^7.28.5",
+    "@babel/core": "^7.29.13",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-typescript": "^7.29.7",
     "@testing-library/dom": "^10.4.2",
